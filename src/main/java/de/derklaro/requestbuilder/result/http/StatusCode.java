@@ -31,12 +31,12 @@ import java.util.Arrays;
 /**
  * Represents the available status codes which a web server can return when you have made a request
  * to the server.
- *
+ * <p>
  * Documentation notes from <a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">
- *     Wikipedia</a>
+ * Wikipedia</a>
  *
- * @since RB 1.1
  * @author derklaro
+ * @since RB 1.1
  */
 public enum StatusCode {
 
@@ -212,7 +212,7 @@ public enum StatusCode {
      * field containing a challenge applicable to the requested resource. See Basic access
      * authentication and Digest access authentication. 401 semantically means "unauthorised",
      * the user does not have valid authentication credentials for the target resource.
-     *
+     * <p>
      * Note: Some sites incorrectly issue HTTP 401 when an IP address is banned from the website
      * (usually the website domain) and that specific address is refused permission to access a
      * website.
@@ -391,7 +391,7 @@ public enum StatusCode {
     REQUEST_HEADER_FIELDS_TOO_LARGE(431),
 
     /**
-     *A server operator has received a legal demand to deny access to a resource or to a set of
+     * A server operator has received a legal demand to deny access to a resource or to a set of
      * resources that includes the requested resource.[61] The code 451 was chosen as a reference
      * to the novel Fahrenheit 451 (see the Acknowledgements in the RFC).
      */

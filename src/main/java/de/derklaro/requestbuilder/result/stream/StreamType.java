@@ -26,9 +26,9 @@ package de.derklaro.requestbuilder.result.stream;
 /**
  * The chooser for a stream type provided by the connection to the web host.
  *
- * @since RB 1.0
- * @version RB 1.1
  * @author derklaro
+ * @version RB 1.1
+ * @since RB 1.0
  */
 public enum StreamType {
 

@@ -31,22 +31,25 @@ import de.derklaro.requestbuilder.types.MimeType;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
  * This class is the default implementation of the {@link RequestBuilder}.
  *
- * @see RequestBuilder#newBuilder(String, Proxy)
- *
- * @since RB 1.0
  * @author derklaro
+ * @see RequestBuilder#newBuilder(String, Proxy)
+ * @since RB 1.0
  */
 class DefaultRequestBuilder implements RequestBuilder {
 
@@ -59,13 +62,15 @@ class DefaultRequestBuilder implements RequestBuilder {
 
     private final String url;
 
-    private Proxy proxy;
+    private final Proxy proxy;
 
     private RequestMethod requestMethod = RequestMethod.GET;
 
-    private Collection<String> body = new ArrayList<>();
+    private final Collection<String> body = new ArrayList<>();
 
-    private Map<String, String> headers = new ConcurrentHashMap<>();
+    private final Map<String, String> headers = new ConcurrentHashMap<>();
+
+    private final Collection<HttpCookie> cookies = new ArrayList<>();
 
     private MimeType mimeType;
 
@@ -209,6 +214,27 @@ class DefaultRequestBuilder implements RequestBuilder {
 
     @Nonnull
     @Override
+    public RequestBuilder addCookie(@Nonnull String name, @Nonnull String value) {
+        this.cookies.add(new HttpCookie(name, value));
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public RequestBuilder addCookies(@Nonnull HttpCookie... cookies) {
+        this.cookies.addAll(Arrays.asList(cookies));
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public RequestBuilder addCookies(@Nonnull Collection<HttpCookie> cookies) {
+        this.cookies.addAll(cookies);
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public RequestResult fireAndForget() throws IOException {
         final HttpURLConnection httpURLConnection = choose();
         Validate.notNull(httpURLConnection, "Could not choose connection type or cannot open connection");
@@ -243,10 +269,32 @@ class DefaultRequestBuilder implements RequestBuilder {
             httpURLConnection.setRequestProperty("Accept", accept.getValue());
         }
 
+        if (this.cookies.size() > 0) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (HttpCookie cookie : this.cookies) {
+                stringBuilder.append(cookie.getName()).append("=").append(cookie.getValue()).append(",");
+            }
+
+            httpURLConnection.setRequestProperty("Cookie", stringBuilder.substring(0, stringBuilder.length() - 1));
+        }
+
         httpURLConnection.connect();
         return RequestResult.create(httpURLConnection, body);
     }
 
+    @Nonnull
+    @Override
+    public Future<RequestResult> fireAndForgetAsynchronously() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return this.fireAndForget();
+            } catch (final IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+    }
+
+    @Nullable
     private HttpURLConnection choose() {
         try {
             if (this.proxy == null) {

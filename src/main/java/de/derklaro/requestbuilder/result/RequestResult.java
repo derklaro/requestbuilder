@@ -30,12 +30,13 @@ import de.derklaro.requestbuilder.result.stream.StreamType;
 import javax.annotation.Nonnull;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.util.Collection;
 
 /**
  * This class represents any connection to a web host created by {@link RequestBuilder#fireAndForget()}.
- *
+ * <p>
  * This class is used to wrap the result of a request. Let's say you are opening a connection to
  * {@code https://gist.github.com/yaotest/4064031} by using:
  * <pre>{@code
@@ -43,7 +44,7 @@ import java.util.Collection;
  *     RequestResult result = RequestBuilder.newBuilder("https://gist.github.com/yaotest/4064031", null).fireAndForget();
  * }
  * }</pre>
- *
+ * <p>
  * If you now want to the the full site output you have to check the result code first:
  * <pre>{@code
  * if (result.getStatusCode() == 200) {
@@ -53,7 +54,7 @@ import java.util.Collection;
  *
  * // error
  * }</pre>
- *
+ * <p>
  * or to simplify it:
  * <pre>{@code
  * if (!result.hasFailed()) {
@@ -63,7 +64,7 @@ import java.util.Collection;
  *
  * // error
  * }</pre>
- *
+ * <p>
  * With this information you can either get the correct input stream of the connection using:
  * <pre>{@code
  * if (!result.hasFailed()) {
@@ -73,12 +74,12 @@ import java.util.Collection;
  *
  * InputStream stream = result.getStream(StreamType.ERROR); // error stream
  * }</pre>
- *
+ * <p>
  * Simplify this by using the chooser:
  * <pre>{@code
  * InputStream stream = result.getStream(StreamType.CHOOSE); // default or error stream
  * }</pre>
- *
+ * <p>
  * The other way to get the result as string is to use the implemented methods:
  * <pre>{@code
  * if (!result.hasFailed()) {
@@ -88,21 +89,20 @@ import java.util.Collection;
  *
  * String errorMessage = result.getErrorResultAsString(); // error
  * }</pre>
- *
+ * <p>
  * or simplified use:
  * <pre>{@code
  * String resultMessage = result.getResultAsString(); // error or success
  * }</pre>
- *
+ * <p>
  * This class is extremely useful to prevent a lot of code coming up by the time and prevents messy
  * classes full connection code.
  *
+ * @author derklaro
+ * @version RB 1.1
  * @see RequestBuilder#fireAndForget()
  * @see DefaultRequestResult
- *
  * @since RB 1.0
- * @version RB 1.1
- * @author derklaro
  */
 public interface RequestResult extends AutoCloseable {
 
@@ -149,11 +149,10 @@ public interface RequestResult extends AutoCloseable {
     /**
      * Reads the input stream of the connection and returns the result as string.
      *
-     * @see #hasFailed()
-     * @see #isConnected()
-     *
      * @return The string created from the default input stream of the connection to the host.
      * @throws RuntimeException if the connection is not connected, already closed or the request wasn't successful
+     * @see #hasFailed()
+     * @see #isConnected()
      */
     @Nonnull
     String getSuccessResultAsString();
@@ -161,11 +160,10 @@ public interface RequestResult extends AutoCloseable {
     /**
      * Reads the error input stream of the connection and returns the result as string.
      *
-     * @see #hasFailed()
-     * @see #isConnected()
-     *
      * @return The string created from the error input stream of the connection to the host.
      * @throws RuntimeException if the connection is not connected, already closed or the request was successful
+     * @see #hasFailed()
+     * @see #isConnected()
      */
     @Nonnull
     String getErrorResultAsString();
@@ -173,16 +171,34 @@ public interface RequestResult extends AutoCloseable {
     /**
      * Returns either the success result or the error result.
      *
+     * @return The string created from the error or default input stream of the connection to the host.
+     * @throws RuntimeException if the connection is not connected or already closed
      * @see #hasFailed()
      * @see #isConnected()
      * @see #getSuccessResultAsString()
      * @see #getErrorResultAsString()
-     *
-     * @return The string created from the error or default input stream of the connection to the host.
-     * @throws RuntimeException if the connection is not connected or already closed
      */
     @Nonnull
     String getResultAsString();
+
+    /**
+     * Returns all cookies which are given in the header of the connection result.
+     *
+     * @return All cookies which were sent by the remote side
+     * @since RB 1.2
+     */
+    @Nonnull
+    Collection<HttpCookie> getCookies();
+
+    /**
+     * Returns all cookies which are given in the header of the connection result.
+     *
+     * @param cookiesHeader The header field name in which the cookies got stored by the remote side
+     * @return All cookies which were sent by the remote side
+     * @since RB 1.2
+     */
+    @Nonnull
+    Collection<HttpCookie> getCookies(@Nonnull String cookiesHeader);
 
     /**
      * @return The status code of the connection or {@code -1} if the connection is not connected or already closed

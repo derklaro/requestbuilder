@@ -26,10 +26,9 @@ package de.derklaro.requestbuilder.types;
 /**
  * This class represents any mime type as object which is supported.
  *
+ * @author derklaro
  * @see MimeTypes#getTypes()
  * @see MimeTypes#getMimeType(String)
- *
- * @author derklaro
  * @since RB 1.1
  */
 public class MimeType {

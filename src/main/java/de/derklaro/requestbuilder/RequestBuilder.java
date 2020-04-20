@@ -31,7 +31,10 @@ import de.derklaro.requestbuilder.types.MimeType;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.net.HttpCookie;
 import java.net.Proxy;
+import java.util.Collection;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -43,7 +46,7 @@ import java.util.concurrent.TimeUnit;
  * <br/>
  * By default a implementation of this class is the {@link DefaultRequestBuilder} which can be accessed
  * using {@link RequestBuilder#newBuilder(String, Proxy)}.
- *
+ * <p>
  * To create a new request builder you can use:
  *
  * <pre>{@code
@@ -51,24 +54,24 @@ import java.util.concurrent.TimeUnit;
  *     RequestBuilder builder = RequestBuilder.newBuilder("https://google.de", null);
  * }
  * }</pre>
- *
+ * <p>
  * Now you can set your information you want to send to the host, for example a header:
  *
  * <pre>{@code builder.addHeader("Content-Length", "45");}</pre>
- *
+ * <p>
  * or you can add a body to the builder using:
  *
  * <pre>{@code builder.addBody("value", "test");}</pre>
- *
+ * <p>
  * Also you can enable user interaction
  * <pre>{@code builder.enableUserInteraction();}</pre>
- *
+ * <p>
  * enable output
  * <pre>{@code builder.enableOutput();}</pre>
- *
+ * <p>
  * or disable input
  * <pre>{@code builder.disableInput();}</pre>.
- *
+ * <p>
  * To finally fire the request and get the result of the request use:
  * <pre>{@code
  * try (RequestResult result = builder.fireAndForget()) {
@@ -78,23 +81,21 @@ import java.util.concurrent.TimeUnit;
  * }
  * }</pre>
  *
+ * @author derklaro
+ * @version RB 1.1
  * @see RequestBuilder#newBuilder(String, Proxy)
  * @see DefaultRequestBuilder
- *
  * @since RB 1.0
- * @version RB 1.1
- * @author derklaro
  */
 public interface RequestBuilder extends AutoCloseable {
 
     /**
      * Creates a new request builder instance
      *
-     * @see RequestBuilder#newBuilder(String, Proxy)
-     *
      * @param url The target web url which you want to open
      * @return A new request builder instance with the given target url
      * @throws IllegalArgumentException If the given url is null
+     * @see RequestBuilder#newBuilder(String, Proxy)
      */
     static RequestBuilder newBuilder(@Nonnull String url) {
         return newBuilder(url, null);
@@ -103,7 +104,7 @@ public interface RequestBuilder extends AutoCloseable {
     /**
      * Creates a new request builder instance
      *
-     * @param url The target web url which you want to open
+     * @param url   The target web url which you want to open
      * @param proxy The proxy through which the connection should go
      * @return A new request builder instance with the given target url
      * @throws IllegalArgumentException If the given url is null
@@ -128,7 +129,7 @@ public interface RequestBuilder extends AutoCloseable {
     /**
      * Adds a body to the connection. Ensure you've enabled output by using {@link #enableOutput()}
      *
-     * @param key The key of the body parameter
+     * @param key   The key of the body parameter
      * @param value The value of the body parameter
      * @return The current instance of the class
      * @throws IllegalArgumentException If the key or value is null
@@ -149,7 +150,7 @@ public interface RequestBuilder extends AutoCloseable {
     /**
      * Adds a header to the connection
      *
-     * @param key The key of the header
+     * @param key   The key of the header
      * @param value The value of the header
      * @return The current instance of the class
      * @throws IllegalArgumentException If the key or value is null
@@ -160,10 +161,10 @@ public interface RequestBuilder extends AutoCloseable {
     /**
      * Sets the mime type of the connection which should get sent
      *
-     * @see de.derklaro.requestbuilder.types.MimeTypes#getMimeType(String)
      * @param mimeType The mime type which should be used
      * @return The current instance of the class
      * @throws IllegalArgumentException If the mime type is null
+     * @see de.derklaro.requestbuilder.types.MimeTypes#getMimeType(String)
      */
     @Nonnull
     RequestBuilder setMimeType(@Nonnull MimeType mimeType);
@@ -171,12 +172,11 @@ public interface RequestBuilder extends AutoCloseable {
     /**
      * Sets the mime type which is accepted by the connection
      *
-     * @see de.derklaro.requestbuilder.types.MimeTypes#getMimeType(String)
-     *
-     * @since RB 1.1
      * @param mimeType The mime type which should be accepted
      * @return The current instance of the class
      * @throws IllegalArgumentException If the mime type is null
+     * @see de.derklaro.requestbuilder.types.MimeTypes#getMimeType(String)
+     * @since RB 1.1
      */
     @Nonnull
     RequestBuilder accepts(@Nonnull MimeType mimeType);
@@ -234,7 +234,7 @@ public interface RequestBuilder extends AutoCloseable {
     /**
      * Sets the timeout time for the connection
      *
-     * @param timeout The time which should be wait until the connection timout
+     * @param timeout  The time which should be wait until the connection timout
      * @param timeUnit The time unit of the connect timout
      * @return The current instance of this class
      * @throws IllegalArgumentException If either the TimeUnit is null or timeout is {@code < 0}
@@ -245,13 +245,46 @@ public interface RequestBuilder extends AutoCloseable {
     /**
      * Sets the read timeout of the connection (only needed if input is enabled)
      *
-     * @param timeout The time which should be wait until the read timout
+     * @param timeout  The time which should be wait until the read timout
      * @param timeUnit The time unit of the read timout
      * @return The current instance of this class
      * @throws IllegalArgumentException If either the TimeUnit is null or timeout is {@code < 0}
      */
     @Nonnull
     RequestBuilder setReadTimeOut(int timeout, @Nonnull TimeUnit timeUnit);
+
+    /**
+     * Adds a cookie to the request header
+     *
+     * @param name  The name of the cookie
+     * @param value The value which the cookie should has
+     * @return The current instance of this class
+     * @since RB 1.2
+     */
+    @Nonnull
+    RequestBuilder addCookie(@Nonnull String name, @Nonnull String value);
+
+    /**
+     * Adds a bunch of cookies to the request. Note that only the key and value are used when firing the
+     * request.
+     *
+     * @param cookies The cookies which should get added to the request
+     * @return The current instance of this class
+     * @since RB 1.2
+     */
+    @Nonnull
+    RequestBuilder addCookies(@Nonnull HttpCookie... cookies);
+
+    /**
+     * Adds a bunch of cookies to the request. Note that only the key and value are used when firing the
+     * request.
+     *
+     * @param cookies The cookies which should get added to the request
+     * @return The current instance of this class
+     * @since RB 1.2
+     */
+    @Nonnull
+    RequestBuilder addCookies(@Nonnull Collection<HttpCookie> cookies);
 
     /**
      * Fires the request and waits for the result
@@ -261,4 +294,12 @@ public interface RequestBuilder extends AutoCloseable {
      */
     @Nonnull
     RequestResult fireAndForget() throws IOException;
+
+    /**
+     * Fires the request async and returns the future of it
+     *
+     * @return The future of the result, filled after the request was successful
+     */
+    @Nonnull
+    Future<RequestResult> fireAndForgetAsynchronously();
 }

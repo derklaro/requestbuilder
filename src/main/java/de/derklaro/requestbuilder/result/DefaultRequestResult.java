@@ -32,17 +32,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
  * This is the default implementation of a {@link RequestResult}.
  *
- * @see RequestBuilder#fireAndForget()
- *
- * @since RB 1.0
  * @author derklaro
+ * @see RequestBuilder#fireAndForget()
+ * @since RB 1.0
  */
 class DefaultRequestResult implements RequestResult {
 
@@ -142,6 +143,23 @@ class DefaultRequestResult implements RequestResult {
         return getErrorResultAsString();
     }
 
+    @Nonnull
+    @Override
+    public Collection<HttpCookie> getCookies() {
+        return this.getCookies("Set-Cookie");
+    }
+
+    @Nonnull
+    @Override
+    public Collection<HttpCookie> getCookies(@Nonnull String cookiesHeader) {
+        String headerField = this.httpURLConnection.getHeaderField(cookiesHeader);
+        if (headerField == null) {
+            return new ArrayList<>();
+        }
+
+        return HttpCookie.parse(headerField);
+    }
+
     @Override
     public int getStatusCode() {
         try {
@@ -154,9 +172,9 @@ class DefaultRequestResult implements RequestResult {
     private String readStream(InputStream stream) {
         StringBuilder stringBuilder = new StringBuilder();
         try (InputStreamReader inputStreamReader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
-            final char[] chars = new char[4*1024];
+            final char[] chars = new char[4 * 1024];
             int len;
-            while((len = inputStreamReader.read(chars)) >= 0) {
+            while ((len = inputStreamReader.read(chars)) >= 0) {
                 stringBuilder.append(chars, 0, len);
             }
         } catch (final IOException ex) {

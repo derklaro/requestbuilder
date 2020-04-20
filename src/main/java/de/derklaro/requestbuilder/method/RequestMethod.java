@@ -28,7 +28,7 @@ import de.derklaro.requestbuilder.result.RequestResult;
 /**
  * Represents any request method which can be used in the {@link de.derklaro.requestbuilder.RequestBuilder}
  * when creating a request to a web host.
- *
+ * <p>
  * Basically you can use this snippet to use this methods:
  *
  * <pre>{@code
@@ -36,17 +36,16 @@ import de.derklaro.requestbuilder.result.RequestResult;
  *     RequestBuilder builder = RequestBuilder.newBuilder("https://google.de", null).setRequestMethod(RequestMethod.GET);
  * }
  * }</pre>
- *
+ * <p>
  * The web server should handle the request method in the specified else it will throw a
  * <a href="https://docs.oracle.com/javaee/7/api/javax/ws/rs/BadRequestException.html">
- *     BadRequestException</a>.
+ * BadRequestException</a>.
  * Please check the {@link RequestResult#getStatusCode()} if it's a {@code 400}.
  *
+ * @author derklaro
  * @see RequestResult#getStatusCode()
  * @see de.derklaro.requestbuilder.RequestBuilder#setRequestMethod(RequestMethod)
- *
  * @since RB 1.0
- * @author derklaro
  */
 public enum RequestMethod {
 

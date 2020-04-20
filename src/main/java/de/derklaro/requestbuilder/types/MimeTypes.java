@@ -31,7 +31,7 @@ import java.util.*;
 /**
  * Represents any mime type which is supported by the {@link de.derklaro.requestbuilder.RequestBuilder}
  * class.
- *
+ * <p>
  * You can set the mime type of the outgoing connection by using:
  *
  * <pre>{@code
@@ -39,7 +39,7 @@ import java.util.*;
  *     RequestBuilder builder = RequestBuilder.newBuilder("https://google.de", null).setMimeType(MimeType.getMimeType("application/json"));
  * }
  * }</pre>
- *
+ * <p>
  * And to accept only one incoming mime type:
  *
  * <pre>{@code
@@ -47,7 +47,7 @@ import java.util.*;
  *     RequestBuilder builder = RequestBuilder.newBuilder("https://google.de", null).accepts(MimeType.getMimeType("application/json"));
  * }
  * }</pre>
- *
+ * <p>
  * It's recommended to use {@link MimeTypes#isMimeTypeSupported(String)} to check first if the mime-type
  * is supported before using it directly:
  *
@@ -61,15 +61,14 @@ import java.util.*;
  *     // not supported
  * }
  * }</pre>
- *
+ * <p>
  * To get a list of all avilable use {@link MimeTypes#getTypes()}. You can check with this option, if
  * the type is supported, too.
  *
- * @see de.derklaro.requestbuilder.RequestBuilder#accepts(MimeType)
- * @see de.derklaro.requestbuilder.RequestBuilder#setMimeType(MimeType)
- *
  * @author derklaro, derrop
  * @version RB 1.1
+ * @see de.derklaro.requestbuilder.RequestBuilder#accepts(MimeType)
+ * @see de.derklaro.requestbuilder.RequestBuilder#setMimeType(MimeType)
  * @since RB 1.0
  */
 public class MimeTypes {
@@ -553,11 +552,10 @@ public class MimeTypes {
      * Gets a mime type from it's key. Check first if the mimetype is supported by using
      * {@link MimeTypes#isMimeTypeSupported(String)}.
      *
-     * @see MimeTypes#getTypes()
-     *
      * @param key The key name of the mime type
      * @return The mime type which key equals to the given one.
      * @throws IllegalArgumentException If the mime type cannot be resolved or the key given is null
+     * @see MimeTypes#getTypes()
      */
     @Nonnull
     public static MimeType getMimeType(@Nonnull String key) {
@@ -572,11 +570,10 @@ public class MimeTypes {
     /**
      * Checks if the given mime type exists.
      *
-     * @since RB 1.1
-     *
      * @param key The key of the mime type
      * @return If the mime type by the given key exists
      * @throws IllegalArgumentException if the given key is null
+     * @since RB 1.1
      */
     public static boolean isMimeTypeSupported(@Nonnull String key) {
         Validate.notNull(key, "Cannot get mime type from null key");

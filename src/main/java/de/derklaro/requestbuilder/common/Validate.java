@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
  * Static methods that helps to check if a constructor or method is used correctly.
  * If the condition cannot be met it will throw an unchecked exception to signal the user that the
  * method is used incorrectly. It's helping developers, too:
- *
+ * <p>
  * Instead of:
  * <pre>{@code
  * public static void println(@Nonnull String text) {
@@ -41,7 +41,7 @@ import javax.annotation.Nullable;
  *     // do something
  * }
  * }</pre>
- *
+ * <p>
  * you can simply use
  *
  * <pre>{@code
@@ -50,7 +50,7 @@ import javax.annotation.Nullable;
  *     // do something
  * }
  * }</pre>
- *
+ * <p>
  * Basically it will flag the use of illegal parameters, for example:
  *
  * <pre>{@code
@@ -58,12 +58,12 @@ import javax.annotation.Nullable;
  *     println(null);
  * }
  * }</pre>
- *
+ * <p>
  * will cause the throw of the exception to flag the invalid usage:
  * <p>Exception in thread "main" java.lang.IllegalArgumentException: Invalid usage of parameter text</p>
  *
- * @since RB 1.1
  * @author derklaro
+ * @since RB 1.1
  */
 public final class Validate {
 
@@ -75,10 +75,10 @@ public final class Validate {
     /**
      * Ensures that the given object is {@code non-null}.
      *
-     * @param check         The object which should get checked if it's null.
-     * @param message       The message which should get printed in the console or simply {@code null}
-     *                      then the message is {@code 'null'}.
-     * @param replacements  The replacements for the formatted string.
+     * @param check        The object which should get checked if it's null.
+     * @param message      The message which should get printed in the console or simply {@code null}
+     *                     then the message is {@code 'null'}.
+     * @param replacements The replacements for the formatted string.
      * @throws IllegalArgumentException If the given object is {@code null}.
      */
     public static void notNull(@Nullable Object check, @Nullable Object message, @Nonnull Object... replacements) {
@@ -90,10 +90,10 @@ public final class Validate {
     /**
      * Checks if the given argument is true
      *
-     * @param check The argument which should get checked
-     * @param message       The message which should get printed in the console or simply {@code null}
-     *                      then the message is {@code 'null'}.
-     * @param replacements  The replacements for the formatted string.
+     * @param check        The argument which should get checked
+     * @param message      The message which should get printed in the console or simply {@code null}
+     *                     then the message is {@code 'null'}.
+     * @param replacements The replacements for the formatted string.
      * @throws IllegalArgumentException if the given argument is {@code false}
      */
     public static void checkArgument(boolean check, @Nullable Object message, @Nonnull Object... replacements) {
