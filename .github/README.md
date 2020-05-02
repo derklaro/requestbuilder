@@ -1,4 +1,4 @@
-# RequestBuilder [![Discord](https://img.shields.io/discord/499666347337449472.svg?color=7289DA&label=discord)](https://discord.gg/uskXdVZ)
+# RequestBuilder [![Discord](https://img.shields.io/discord/499666347337449472.svg?color=7289DA&label=discord)](https://discord.gg/uskXdVZ) [![](https://jitpack.io/v/derklaro/requestbuilder.svg)](https://jitpack.io/#derklaro/requestbuilder)
 This repository provides a simple request builder for url connections completely based on the java provided
 classes without any external dependencies (main goal).
 
