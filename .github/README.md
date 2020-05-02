@@ -27,7 +27,7 @@ Maven dependency:
 <dependency>
     <groupId>com.github.derklaro</groupId>
     <artifactId>requestbuilder-root</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 </dependency>
 ```
 
@@ -41,7 +41,7 @@ maven {
 
 Gradle dependency:
 ```groovy
-compile group: 'com.github.derklaro', name: 'requestbuilder-root', version: '1.0.2'
+compile group: 'com.github.derklaro', name: 'requestbuilder-root', version: '1.0.3'
 ```
 
 ## The builder class
