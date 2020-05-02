@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package de.derklaro.requestbuilder.types;
+package com.github.derklaro.requestbuilder.types;
 
 /**
  * This class represents any mime type as object which is supported.
@@ -29,7 +29,7 @@ package de.derklaro.requestbuilder.types;
  * @author derklaro
  * @see MimeTypes#getTypes()
  * @see MimeTypes#getMimeType(String)
- * @since RB 1.1
+ * @since RB 1.0.1
  */
 public class MimeType {
 

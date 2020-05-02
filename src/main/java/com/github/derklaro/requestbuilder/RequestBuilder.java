@@ -21,12 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package de.derklaro.requestbuilder;
+package com.github.derklaro.requestbuilder;
 
-import de.derklaro.requestbuilder.common.Validate;
-import de.derklaro.requestbuilder.method.RequestMethod;
-import de.derklaro.requestbuilder.result.RequestResult;
-import de.derklaro.requestbuilder.types.MimeType;
+import com.github.derklaro.requestbuilder.common.Validate;
+import com.github.derklaro.requestbuilder.method.RequestMethod;
+import com.github.derklaro.requestbuilder.result.RequestResult;
+import com.github.derklaro.requestbuilder.types.MimeType;
+import com.github.derklaro.requestbuilder.types.MimeTypes;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,16 +35,16 @@ import java.io.IOException;
 import java.net.HttpCookie;
 import java.net.Proxy;
 import java.util.Collection;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
  * This class represents any {@link RequestBuilder} which can be accessed by any method which returns
  * a {@link RequestBuilder}.
- * <br/>
+ * <br>
  * With this class class you basically can create a connection to every web server you need and can
  * requested a parsed result from the input streams using plain java.
- * <br/>
+ * <br>
  * By default a implementation of this class is the {@link DefaultRequestBuilder} which can be accessed
  * using {@link RequestBuilder#newBuilder(String, Proxy)}.
  * <p>
@@ -82,10 +83,10 @@ import java.util.concurrent.TimeUnit;
  * }</pre>
  *
  * @author derklaro
- * @version RB 1.1
+ * @version RB 1.0.1
  * @see RequestBuilder#newBuilder(String, Proxy)
  * @see DefaultRequestBuilder
- * @since RB 1.0
+ * @since RB 1.0.0
  */
 public interface RequestBuilder extends AutoCloseable {
 
@@ -97,6 +98,7 @@ public interface RequestBuilder extends AutoCloseable {
      * @throws IllegalArgumentException If the given url is null
      * @see RequestBuilder#newBuilder(String, Proxy)
      */
+    @Nonnull
     static RequestBuilder newBuilder(@Nonnull String url) {
         return newBuilder(url, null);
     }
@@ -164,7 +166,7 @@ public interface RequestBuilder extends AutoCloseable {
      * @param mimeType The mime type which should be used
      * @return The current instance of the class
      * @throws IllegalArgumentException If the mime type is null
-     * @see de.derklaro.requestbuilder.types.MimeTypes#getMimeType(String)
+     * @see MimeTypes#getMimeType(String)
      */
     @Nonnull
     RequestBuilder setMimeType(@Nonnull MimeType mimeType);
@@ -175,8 +177,8 @@ public interface RequestBuilder extends AutoCloseable {
      * @param mimeType The mime type which should be accepted
      * @return The current instance of the class
      * @throws IllegalArgumentException If the mime type is null
-     * @see de.derklaro.requestbuilder.types.MimeTypes#getMimeType(String)
-     * @since RB 1.1
+     * @see MimeTypes#getMimeType(String)
+     * @since RB 1.0.1
      */
     @Nonnull
     RequestBuilder accepts(@Nonnull MimeType mimeType);
@@ -259,7 +261,7 @@ public interface RequestBuilder extends AutoCloseable {
      * @param name  The name of the cookie
      * @param value The value which the cookie should has
      * @return The current instance of this class
-     * @since RB 1.2
+     * @since RB 1.0.2
      */
     @Nonnull
     RequestBuilder addCookie(@Nonnull String name, @Nonnull String value);
@@ -270,7 +272,7 @@ public interface RequestBuilder extends AutoCloseable {
      *
      * @param cookies The cookies which should get added to the request
      * @return The current instance of this class
-     * @since RB 1.2
+     * @since RB 1.0.2
      */
     @Nonnull
     RequestBuilder addCookies(@Nonnull HttpCookie... cookies);
@@ -281,7 +283,7 @@ public interface RequestBuilder extends AutoCloseable {
      *
      * @param cookies The cookies which should get added to the request
      * @return The current instance of this class
-     * @since RB 1.2
+     * @since RB 1.0.2
      */
     @Nonnull
     RequestBuilder addCookies(@Nonnull Collection<HttpCookie> cookies);
@@ -301,5 +303,5 @@ public interface RequestBuilder extends AutoCloseable {
      * @return The future of the result, filled after the request was successful
      */
     @Nonnull
-    Future<RequestResult> fireAndForgetAsynchronously();
+    CompletableFuture<RequestResult> fireAndForgetAsynchronously();
 }

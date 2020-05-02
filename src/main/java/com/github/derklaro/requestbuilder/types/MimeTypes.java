@@ -21,15 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package de.derklaro.requestbuilder.types;
+package com.github.derklaro.requestbuilder.types;
 
-import de.derklaro.requestbuilder.common.Validate;
+import com.github.derklaro.requestbuilder.RequestBuilder;
+import com.github.derklaro.requestbuilder.common.Validate;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 
 /**
- * Represents any mime type which is supported by the {@link de.derklaro.requestbuilder.RequestBuilder}
+ * Represents any mime type which is supported by the {@link RequestBuilder}
  * class.
  * <p>
  * You can set the mime type of the outgoing connection by using:
@@ -67,9 +68,9 @@ import java.util.*;
  *
  * @author derklaro, derrop
  * @version RB 1.1
- * @see de.derklaro.requestbuilder.RequestBuilder#accepts(MimeType)
- * @see de.derklaro.requestbuilder.RequestBuilder#setMimeType(MimeType)
- * @since RB 1.0
+ * @see RequestBuilder#accepts(MimeType)
+ * @see RequestBuilder#setMimeType(MimeType)
+ * @since RB 1.0.0
  */
 public class MimeTypes {
 
@@ -573,7 +574,7 @@ public class MimeTypes {
      * @param key The key of the mime type
      * @return If the mime type by the given key exists
      * @throws IllegalArgumentException if the given key is null
-     * @since RB 1.1
+     * @since RB 1.0.1
      */
     public static boolean isMimeTypeSupported(@Nonnull String key) {
         Validate.notNull(key, "Cannot get mime type from null key");

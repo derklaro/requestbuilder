@@ -21,11 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package de.derklaro.requestbuilder.result;
+package com.github.derklaro.requestbuilder.result;
 
-import de.derklaro.requestbuilder.RequestBuilder;
-import de.derklaro.requestbuilder.common.Validate;
-import de.derklaro.requestbuilder.result.stream.StreamType;
+import com.github.derklaro.requestbuilder.RequestBuilder;
+import com.github.derklaro.requestbuilder.common.Validate;
+import com.github.derklaro.requestbuilder.result.http.StatusCode;
+import com.github.derklaro.requestbuilder.result.stream.StreamType;
 
 import javax.annotation.Nonnull;
 import java.io.InputStream;
@@ -99,13 +100,14 @@ import java.util.Collection;
  * classes full connection code.
  *
  * @author derklaro
- * @version RB 1.1
+ * @version RB 1.0.3
  * @see RequestBuilder#fireAndForget()
  * @see DefaultRequestResult
- * @since RB 1.0
+ * @since RB 1.0.0
  */
 public interface RequestResult extends AutoCloseable {
 
+    @Nonnull
     static RequestResult create(@Nonnull HttpURLConnection httpURLConnection, @Nonnull Collection<String> body) {
         Validate.notNull(httpURLConnection, "Pleas provide a non-null connection");
         Validate.notNull(body, "Body cannot be null");
@@ -185,7 +187,7 @@ public interface RequestResult extends AutoCloseable {
      * Returns all cookies which are given in the header of the connection result.
      *
      * @return All cookies which were sent by the remote side
-     * @since RB 1.2
+     * @since RB 1.0.2
      */
     @Nonnull
     Collection<HttpCookie> getCookies();
@@ -195,7 +197,7 @@ public interface RequestResult extends AutoCloseable {
      *
      * @param cookiesHeader The header field name in which the cookies got stored by the remote side
      * @return All cookies which were sent by the remote side
-     * @since RB 1.2
+     * @since RB 1.0.2
      */
     @Nonnull
     Collection<HttpCookie> getCookies(@Nonnull String cookiesHeader);
@@ -204,4 +206,14 @@ public interface RequestResult extends AutoCloseable {
      * @return The status code of the connection or {@code -1} if the connection is not connected or already closed
      */
     int getStatusCode();
+
+    /**
+     * @return The status as object based on the returned status code of the connection
+     * @throws IllegalArgumentException If the status code is can not get identified.
+     * @since RB 1.0.3
+     */
+    @Nonnull
+    default StatusCode getStatus() {
+        return StatusCode.getByResult(this.getStatusCode());
+    }
 }

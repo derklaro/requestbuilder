@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package de.derklaro.requestbuilder.common;
+package com.github.derklaro.requestbuilder.common;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -63,7 +63,7 @@ import javax.annotation.Nullable;
  * <p>Exception in thread "main" java.lang.IllegalArgumentException: Invalid usage of parameter text</p>
  *
  * @author derklaro
- * @since RB 1.1
+ * @since RB 1.0.1
  */
 public final class Validate {
 

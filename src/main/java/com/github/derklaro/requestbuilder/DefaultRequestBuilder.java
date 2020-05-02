@@ -21,12 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package de.derklaro.requestbuilder;
+package com.github.derklaro.requestbuilder;
 
-import de.derklaro.requestbuilder.common.Validate;
-import de.derklaro.requestbuilder.method.RequestMethod;
-import de.derklaro.requestbuilder.result.RequestResult;
-import de.derklaro.requestbuilder.types.MimeType;
+import com.github.derklaro.requestbuilder.common.Validate;
+import com.github.derklaro.requestbuilder.method.RequestMethod;
+import com.github.derklaro.requestbuilder.result.RequestResult;
+import com.github.derklaro.requestbuilder.types.MimeType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -41,7 +41,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -49,7 +48,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author derklaro
  * @see RequestBuilder#newBuilder(String, Proxy)
- * @since RB 1.0
+ * @since RB 1.0.0
  */
 class DefaultRequestBuilder implements RequestBuilder {
 
@@ -284,7 +283,7 @@ class DefaultRequestBuilder implements RequestBuilder {
 
     @Nonnull
     @Override
-    public Future<RequestResult> fireAndForgetAsynchronously() {
+    public CompletableFuture<RequestResult> fireAndForgetAsynchronously() {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return this.fireAndForget();

@@ -21,11 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package de.derklaro.requestbuilder.result;
+package com.github.derklaro.requestbuilder.result;
 
-import de.derklaro.requestbuilder.RequestBuilder;
-import de.derklaro.requestbuilder.common.Validate;
-import de.derklaro.requestbuilder.result.stream.StreamType;
+import com.github.derklaro.requestbuilder.RequestBuilder;
+import com.github.derklaro.requestbuilder.result.stream.StreamType;
+import com.github.derklaro.requestbuilder.common.Validate;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -43,7 +43,7 @@ import java.util.Collection;
  *
  * @author derklaro
  * @see RequestBuilder#fireAndForget()
- * @since RB 1.0
+ * @since RB 1.0.0
  */
 class DefaultRequestResult implements RequestResult {
 

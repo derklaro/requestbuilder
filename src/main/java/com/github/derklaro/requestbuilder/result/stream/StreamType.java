@@ -21,14 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package de.derklaro.requestbuilder.result.stream;
+package com.github.derklaro.requestbuilder.result.stream;
 
 /**
  * The chooser for a stream type provided by the connection to the web host.
  *
  * @author derklaro
- * @version RB 1.1
- * @since RB 1.0
+ * @version RB 1.0.1
+ * @since RB 1.0.0
  */
 public enum StreamType {
 
@@ -46,7 +46,7 @@ public enum StreamType {
      * Chooses the correct stream from the options. (That means if StatusCode != {@code 200}
      * it returns {@link #ERROR} if the StatusCode == {@code 200} it returns {@link #DEFAULT}.
      *
-     * @since RB 1.1
+     * @since RB 1.0.1
      */
     CHOOSE
 }

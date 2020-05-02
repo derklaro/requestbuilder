@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package de.derklaro.requestbuilder.result.http;
+package com.github.derklaro.requestbuilder.result.http;
 
-import de.derklaro.requestbuilder.common.Validate;
+import com.github.derklaro.requestbuilder.common.Validate;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -36,7 +36,7 @@ import java.util.Arrays;
  * Wikipedia</a>
  *
  * @author derklaro
- * @since RB 1.1
+ * @since RB 1.0.1
  */
 public enum StatusCode {
 

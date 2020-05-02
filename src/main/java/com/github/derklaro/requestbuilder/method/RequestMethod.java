@@ -21,12 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package de.derklaro.requestbuilder.method;
+package com.github.derklaro.requestbuilder.method;
 
-import de.derklaro.requestbuilder.result.RequestResult;
+import com.github.derklaro.requestbuilder.RequestBuilder;
+import com.github.derklaro.requestbuilder.result.RequestResult;
 
 /**
- * Represents any request method which can be used in the {@link de.derklaro.requestbuilder.RequestBuilder}
+ * Represents any request method which can be used in the {@link RequestBuilder}
  * when creating a request to a web host.
  * <p>
  * Basically you can use this snippet to use this methods:
@@ -44,8 +45,8 @@ import de.derklaro.requestbuilder.result.RequestResult;
  *
  * @author derklaro
  * @see RequestResult#getStatusCode()
- * @see de.derklaro.requestbuilder.RequestBuilder#setRequestMethod(RequestMethod)
- * @since RB 1.0
+ * @see RequestBuilder#setRequestMethod(RequestMethod)
+ * @since RB 1.0.0
  */
 public enum RequestMethod {
 
