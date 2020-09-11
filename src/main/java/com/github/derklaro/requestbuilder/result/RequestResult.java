@@ -27,8 +27,8 @@ import com.github.derklaro.requestbuilder.RequestBuilder;
 import com.github.derklaro.requestbuilder.common.Validate;
 import com.github.derklaro.requestbuilder.result.http.StatusCode;
 import com.github.derklaro.requestbuilder.result.stream.StreamType;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpCookie;
@@ -107,8 +107,8 @@ import java.util.Collection;
  */
 public interface RequestResult extends AutoCloseable {
 
-    @Nonnull
-    static RequestResult create(@Nonnull HttpURLConnection httpURLConnection, @Nonnull Collection<String> body) {
+    @NotNull
+    static RequestResult create(@NotNull HttpURLConnection httpURLConnection, @NotNull Collection<String> body) {
         Validate.notNull(httpURLConnection, "Pleas provide a non-null connection");
         Validate.notNull(body, "Body cannot be null");
 
@@ -125,8 +125,8 @@ public interface RequestResult extends AutoCloseable {
      * @return The input stream of the given type or on the type given by the input stream when using {@link StreamType#CHOOSE}
      * @throws RuntimeException if the connection is not connected or already closed
      */
-    @Nonnull
-    InputStream getStream(@Nonnull StreamType streamType);
+    @NotNull
+    InputStream getStream(@NotNull StreamType streamType);
 
     /**
      * Returns the output stream of the connection if the connection is marked for output using
@@ -135,7 +135,7 @@ public interface RequestResult extends AutoCloseable {
      * @return The {@link OutputStream} of the connection to the host
      * @throws RuntimeException if the connection is not connected or already closed
      */
-    @Nonnull
+    @NotNull
     OutputStream getOutputStream();
 
     /**
@@ -156,7 +156,7 @@ public interface RequestResult extends AutoCloseable {
      * @see #hasFailed()
      * @see #isConnected()
      */
-    @Nonnull
+    @NotNull
     String getSuccessResultAsString();
 
     /**
@@ -167,7 +167,7 @@ public interface RequestResult extends AutoCloseable {
      * @see #hasFailed()
      * @see #isConnected()
      */
-    @Nonnull
+    @NotNull
     String getErrorResultAsString();
 
     /**
@@ -180,7 +180,7 @@ public interface RequestResult extends AutoCloseable {
      * @see #getSuccessResultAsString()
      * @see #getErrorResultAsString()
      */
-    @Nonnull
+    @NotNull
     String getResultAsString();
 
     /**
@@ -189,7 +189,7 @@ public interface RequestResult extends AutoCloseable {
      * @return All cookies which were sent by the remote side
      * @since RB 1.0.2
      */
-    @Nonnull
+    @NotNull
     Collection<HttpCookie> getCookies();
 
     /**
@@ -199,8 +199,8 @@ public interface RequestResult extends AutoCloseable {
      * @return All cookies which were sent by the remote side
      * @since RB 1.0.2
      */
-    @Nonnull
-    Collection<HttpCookie> getCookies(@Nonnull String cookiesHeader);
+    @NotNull
+    Collection<HttpCookie> getCookies(@NotNull String cookiesHeader);
 
     /**
      * @return The status code of the connection or {@code -1} if the connection is not connected or already closed
@@ -212,7 +212,7 @@ public interface RequestResult extends AutoCloseable {
      * @throws IllegalArgumentException If the status code is can not get identified.
      * @since RB 1.0.3
      */
-    @Nonnull
+    @NotNull
     default StatusCode getStatus() {
         return StatusCode.getByResult(this.getStatusCode());
     }

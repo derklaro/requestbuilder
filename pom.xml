@@ -29,7 +29,7 @@
 
     <groupId>com.github.derklaro</groupId>
     <artifactId>requestbuilder-root</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
 
     <issueManagement>
         <system>GitHub</system>
@@ -73,9 +73,10 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <version>3.0.2</version>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>20.1.0</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -83,14 +84,13 @@
         <defaultGoal>clean install</defaultGoal>
 
         <plugins>
-            <!-- maven compiler plugin to set the target and source version (1.8) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
             </plugin>
 

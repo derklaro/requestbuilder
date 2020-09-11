@@ -25,8 +25,9 @@ package com.github.derklaro.requestbuilder.types;
 
 import com.github.derklaro.requestbuilder.RequestBuilder;
 import com.github.derklaro.requestbuilder.common.Validate;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnmodifiableView;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 
 /**
@@ -546,7 +547,7 @@ public class MimeTypes {
         MIME_TYPES.put("xgz", "xgl/drawing");
         MIME_TYPES.put("xmz", "xgl/movie");
 
-        MIME_TYPES.forEach((s, s2) -> TYPES.add(new MimeType(s, s2)));
+        MIME_TYPES.forEach((key, value) -> TYPES.add(new MimeType(key, value)));
     }
 
     /**
@@ -555,17 +556,20 @@ public class MimeTypes {
      *
      * @param key The key name of the mime type
      * @return The mime type which key equals to the given one.
-     * @throws IllegalArgumentException If the mime type cannot be resolved or the key given is null
+     * @throws IllegalStateException If the mime type cannot be resolved or the key given is null
      * @see MimeTypes#getTypes()
      */
-    @Nonnull
-    public static MimeType getMimeType(@Nonnull String key) {
+    @NotNull
+    public static MimeType getMimeType(@NotNull String key) {
         Validate.notNull(key, "Cannot get mime type from null key");
 
-        MimeType mimeType = TYPES.stream().filter(e -> e.getKey().equals(key)).findAny().orElse(null);
-        Validate.notNull(mimeType, "Cannot resolve mime type %s", key);
+        for (MimeType type : TYPES) {
+            if (type.getKey().equals(key)) {
+                return type;
+            }
+        }
 
-        return mimeType;
+        throw new IllegalStateException("Unable to resolve mime type " + key);
     }
 
     /**
@@ -576,15 +580,23 @@ public class MimeTypes {
      * @throws IllegalArgumentException if the given key is null
      * @since RB 1.0.1
      */
-    public static boolean isMimeTypeSupported(@Nonnull String key) {
+    public static boolean isMimeTypeSupported(@NotNull String key) {
         Validate.notNull(key, "Cannot get mime type from null key");
 
-        return TYPES.stream().anyMatch(e -> e.getKey().equals(key));
+        for (MimeType type : TYPES) {
+            if (type.getKey().equals(key)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
      * @return All supported mime types
      */
+    @NotNull
+    @UnmodifiableView
     public static Collection<MimeType> getTypes() {
         return Collections.unmodifiableCollection(TYPES);
     }

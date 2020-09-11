@@ -28,9 +28,10 @@ import com.github.derklaro.requestbuilder.method.RequestMethod;
 import com.github.derklaro.requestbuilder.result.RequestResult;
 import com.github.derklaro.requestbuilder.types.MimeType;
 import com.github.derklaro.requestbuilder.types.MimeTypes;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Range;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.HttpCookie;
 import java.net.Proxy;
@@ -98,9 +99,9 @@ public interface RequestBuilder extends AutoCloseable {
      * @throws IllegalArgumentException If the given url is null
      * @see RequestBuilder#newBuilder(String, Proxy)
      */
-    @Nonnull
-    static RequestBuilder newBuilder(@Nonnull String url) {
-        return newBuilder(url, null);
+    @NotNull
+    static RequestBuilder newBuilder(@NotNull String url) {
+        return newBuilder(url, Proxy.NO_PROXY);
     }
 
     /**
@@ -111,9 +112,13 @@ public interface RequestBuilder extends AutoCloseable {
      * @return A new request builder instance with the given target url
      * @throws IllegalArgumentException If the given url is null
      */
-    @Nonnull
-    static RequestBuilder newBuilder(@Nonnull String url, @Nullable Proxy proxy) {
+    @NotNull
+    static RequestBuilder newBuilder(@NotNull String url, /* @NotNull */ Proxy proxy) {
         Validate.notNull(url, "Invalid url %s", url);
+        if (proxy == null) {
+            System.err.println("The proxy provided should be not-null (for no proxy use Proxy.NO_PROXY)");
+            proxy = Proxy.NO_PROXY;
+        }
 
         return new DefaultRequestBuilder(url, proxy);
     }
@@ -124,9 +129,24 @@ public interface RequestBuilder extends AutoCloseable {
      * @param requestMethod The request method which should be used
      * @return The current instance of the class
      * @throws IllegalArgumentException If the given method is null
+     * @deprecated Use {@link #requestMethod(RequestMethod)} instead
      */
-    @Nonnull
-    RequestBuilder setRequestMethod(@Nonnull RequestMethod requestMethod);
+    @NotNull
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
+    default RequestBuilder setRequestMethod(@NotNull RequestMethod requestMethod) {
+        return this.requestMethod(requestMethod);
+    }
+
+    /**
+     * Sets the request method of the connection
+     *
+     * @param requestMethod The request method which should be used
+     * @return The current instance of the class
+     * @throws IllegalArgumentException If the given method is null
+     */
+    @NotNull
+    RequestBuilder requestMethod(@NotNull RequestMethod requestMethod);
 
     /**
      * Adds a body to the connection. Ensure you've enabled output by using {@link #enableOutput()}
@@ -136,8 +156,8 @@ public interface RequestBuilder extends AutoCloseable {
      * @return The current instance of the class
      * @throws IllegalArgumentException If the key or value is null
      */
-    @Nonnull
-    RequestBuilder addBody(@Nonnull String key, @Nonnull String value);
+    @NotNull
+    RequestBuilder addBody(@NotNull String key, @NotNull String value);
 
     /**
      * Adds a body to the connection. Ensure you've enabled output by using {@link #enableOutput()}
@@ -146,8 +166,8 @@ public interface RequestBuilder extends AutoCloseable {
      * @return The current instance of the class
      * @throws IllegalArgumentException If the body string is null
      */
-    @Nonnull
-    RequestBuilder addBody(@Nonnull String body);
+    @NotNull
+    RequestBuilder addBody(@NotNull String body);
 
     /**
      * Adds a header to the connection
@@ -157,8 +177,24 @@ public interface RequestBuilder extends AutoCloseable {
      * @return The current instance of the class
      * @throws IllegalArgumentException If the key or value is null
      */
-    @Nonnull
-    RequestBuilder addHeader(@Nonnull String key, @Nonnull String value);
+    @NotNull
+    RequestBuilder addHeader(@NotNull String key, @NotNull String value);
+
+    /**
+     * Sets the mime type of the connection which should get sent
+     *
+     * @param mimeType The mime type which should be used
+     * @return The current instance of the class
+     * @throws IllegalArgumentException If the mime type is null
+     * @see MimeTypes#getMimeType(String)
+     * @deprecated Use {@link #mimeType(MimeType)} instead
+     */
+    @NotNull
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
+    default RequestBuilder setMimeType(@NotNull MimeType mimeType) {
+        return this.mimeType(mimeType);
+    }
 
     /**
      * Sets the mime type of the connection which should get sent
@@ -168,8 +204,8 @@ public interface RequestBuilder extends AutoCloseable {
      * @throws IllegalArgumentException If the mime type is null
      * @see MimeTypes#getMimeType(String)
      */
-    @Nonnull
-    RequestBuilder setMimeType(@Nonnull MimeType mimeType);
+    @NotNull
+    RequestBuilder mimeType(@NotNull MimeType mimeType);
 
     /**
      * Sets the mime type which is accepted by the connection
@@ -180,8 +216,23 @@ public interface RequestBuilder extends AutoCloseable {
      * @see MimeTypes#getMimeType(String)
      * @since RB 1.0.1
      */
-    @Nonnull
-    RequestBuilder accepts(@Nonnull MimeType mimeType);
+    @NotNull
+    RequestBuilder accepts(@NotNull MimeType mimeType);
+
+    /**
+     * Sets the fixed stream length of the outgoing connection
+     *
+     * @param length The fixed stream length of the connection
+     * @return The current instance of the class
+     * @throws IllegalArgumentException if the length is {@code < 0}
+     * @deprecated Use {@link #fixedOutputStreamLength(int)} instead
+     */
+    @NotNull
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
+    default RequestBuilder setFixedOutputStreamLength(@Range(from = 0, to = Integer.MAX_VALUE) int length) {
+        return this.fixedOutputStreamLength(length);
+    }
 
     /**
      * Sets the fixed stream length of the outgoing connection
@@ -190,15 +241,15 @@ public interface RequestBuilder extends AutoCloseable {
      * @return The current instance of the class
      * @throws IllegalArgumentException if the length is {@code < 0}
      */
-    @Nonnull
-    RequestBuilder setFixedOutputStreamLength(int length);
+    @NotNull
+    RequestBuilder fixedOutputStreamLength(@Range(from = 0, to = Integer.MAX_VALUE) int length);
 
     /**
      * Enables the follow of the redirects from the web server
      *
      * @return The current instance of the class
      */
-    @Nonnull
+    @NotNull
     RequestBuilder enableRedirectFollow();
 
     /**
@@ -206,7 +257,7 @@ public interface RequestBuilder extends AutoCloseable {
      *
      * @return The current instance of this class
      */
-    @Nonnull
+    @NotNull
     RequestBuilder disableCaches();
 
     /**
@@ -214,7 +265,7 @@ public interface RequestBuilder extends AutoCloseable {
      *
      * @return The current instance oif this class
      */
-    @Nonnull
+    @NotNull
     RequestBuilder enableOutput();
 
     /**
@@ -222,7 +273,7 @@ public interface RequestBuilder extends AutoCloseable {
      *
      * @return The current instance of this class
      */
-    @Nonnull
+    @NotNull
     RequestBuilder disableInput();
 
     /**
@@ -230,7 +281,7 @@ public interface RequestBuilder extends AutoCloseable {
      *
      * @return The current instance of this class
      */
-    @Nonnull
+    @NotNull
     RequestBuilder enableUserInteraction();
 
     /**
@@ -240,9 +291,41 @@ public interface RequestBuilder extends AutoCloseable {
      * @param timeUnit The time unit of the connect timout
      * @return The current instance of this class
      * @throws IllegalArgumentException If either the TimeUnit is null or timeout is {@code < 0}
+     * @deprecated Use {@link #connectTimeout(int, TimeUnit)} instead
      */
-    @Nonnull
-    RequestBuilder setConnectTimeout(int timeout, @Nonnull TimeUnit timeUnit);
+    @NotNull
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
+    default RequestBuilder setConnectTimeout(@Range(from = 0, to = Integer.MAX_VALUE) int timeout, @NotNull TimeUnit timeUnit) {
+        return this.connectTimeout(timeout, timeUnit);
+    }
+
+    /**
+     * Sets the timeout time for the connection
+     *
+     * @param timeout  The time which should be wait until the connection timout
+     * @param timeUnit The time unit of the connect timout
+     * @return The current instance of this class
+     * @throws IllegalArgumentException If either the TimeUnit is null or timeout is {@code < 0}
+     */
+    @NotNull
+    RequestBuilder connectTimeout(@Range(from = 0, to = Integer.MAX_VALUE) int timeout, @NotNull TimeUnit timeUnit);
+
+    /**
+     * Sets the read timeout of the connection (only needed if input is enabled)
+     *
+     * @param timeout  The time which should be wait until the read timout
+     * @param timeUnit The time unit of the read timout
+     * @return The current instance of this class
+     * @throws IllegalArgumentException If either the TimeUnit is null or timeout is {@code < 0}
+     * @deprecated Use {@link #readTimeout(int, TimeUnit)} instead
+     */
+    @NotNull
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
+    default RequestBuilder setReadTimeOut(int timeout, @NotNull TimeUnit timeUnit) {
+        return this.readTimeout(timeout, timeUnit);
+    }
 
     /**
      * Sets the read timeout of the connection (only needed if input is enabled)
@@ -252,8 +335,8 @@ public interface RequestBuilder extends AutoCloseable {
      * @return The current instance of this class
      * @throws IllegalArgumentException If either the TimeUnit is null or timeout is {@code < 0}
      */
-    @Nonnull
-    RequestBuilder setReadTimeOut(int timeout, @Nonnull TimeUnit timeUnit);
+    @NotNull
+    RequestBuilder readTimeout(int timeout, @NotNull TimeUnit timeUnit);
 
     /**
      * Adds a cookie to the request header
@@ -263,8 +346,8 @@ public interface RequestBuilder extends AutoCloseable {
      * @return The current instance of this class
      * @since RB 1.0.2
      */
-    @Nonnull
-    RequestBuilder addCookie(@Nonnull String name, @Nonnull String value);
+    @NotNull
+    RequestBuilder addCookie(@NotNull String name, @NotNull String value);
 
     /**
      * Adds a bunch of cookies to the request. Note that only the key and value are used when firing the
@@ -274,8 +357,8 @@ public interface RequestBuilder extends AutoCloseable {
      * @return The current instance of this class
      * @since RB 1.0.2
      */
-    @Nonnull
-    RequestBuilder addCookies(@Nonnull HttpCookie... cookies);
+    @NotNull
+    RequestBuilder addCookies(@NotNull HttpCookie... cookies);
 
     /**
      * Adds a bunch of cookies to the request. Note that only the key and value are used when firing the
@@ -285,8 +368,8 @@ public interface RequestBuilder extends AutoCloseable {
      * @return The current instance of this class
      * @since RB 1.0.2
      */
-    @Nonnull
-    RequestBuilder addCookies(@Nonnull Collection<HttpCookie> cookies);
+    @NotNull
+    RequestBuilder addCookies(@NotNull Collection<HttpCookie> cookies);
 
     /**
      * Fires the request and waits for the result
@@ -294,7 +377,7 @@ public interface RequestBuilder extends AutoCloseable {
      * @return The result of the the request which got fired
      * @throws IOException If an connection error, read error etc. occurs
      */
-    @Nonnull
+    @NotNull
     RequestResult fireAndForget() throws IOException;
 
     /**
@@ -302,6 +385,6 @@ public interface RequestBuilder extends AutoCloseable {
      *
      * @return The future of the result, filled after the request was successful
      */
-    @Nonnull
+    @NotNull
     CompletableFuture<RequestResult> fireAndForgetAsynchronously();
 }

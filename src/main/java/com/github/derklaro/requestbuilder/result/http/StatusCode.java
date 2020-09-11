@@ -23,10 +23,7 @@
  */
 package com.github.derklaro.requestbuilder.result.http;
 
-import com.github.derklaro.requestbuilder.common.Validate;
-
-import javax.annotation.Nonnull;
-import java.util.Arrays;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents the available status codes which a web server can return when you have made a request
@@ -459,28 +456,32 @@ public enum StatusCode {
      */
     NETWORK_AUTHENTICATION_REQUIRED(511);
 
+    private static final StatusCode[] VALUES = StatusCode.values(); // avoid copying
+    private final int code;
+
     StatusCode(int code) {
         this.code = code;
     }
-
-    private final int code;
 
     /**
      * Gets the {@link StatusCode} of the connection by it's id
      *
      * @param result The id of the status code which got returned.
      * @return the status code by the id of the status (if the id is {@code -1} it's {@link #NOT_FOUND})
-     * @throws IllegalArgumentException If the status code is can not get identified.
+     * @throws IllegalStateException If the status code is can not get identified.
      */
-    @Nonnull
+    @NotNull
     public static StatusCode getByResult(int result) {
         if (result == -1) {
             return StatusCode.NOT_FOUND;
         }
 
-        StatusCode code = Arrays.stream(values()).filter(e -> e.code == result).findFirst().orElse(null);
-        Validate.notNull(code, "Server returned unknown http response %d", result);
+        for (StatusCode value : VALUES) {
+            if (value.code == result) {
+                return value;
+            }
+        }
 
-        return code;
+        throw new IllegalStateException("Server returned unknown status code " + result);
     }
 }

@@ -23,8 +23,8 @@
  */
 package com.github.derklaro.requestbuilder.common;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Static methods that helps to check if a constructor or method is used correctly.
@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
  * <p>
  * Instead of:
  * <pre>{@code
- * public static void println(@Nonnull String text) {
+ * public static void println(@NotNull String text) {
  *     if (text == null) {
  *         throw new IllegalArgumentException(String.format("Invalid usage of parameter %s", "text"));
  *     }
@@ -45,7 +45,7 @@ import javax.annotation.Nullable;
  * you can simply use
  *
  * <pre>{@code
- * public static void println(@Nonnull String text) {
+ * public static void println(@NotNull String text) {
  *     Validate.notNull(text, "Invalid usage of parameter %s", "text");
  *     // do something
  * }
@@ -81,7 +81,7 @@ public final class Validate {
      * @param replacements The replacements for the formatted string.
      * @throws IllegalArgumentException If the given object is {@code null}.
      */
-    public static void notNull(@Nullable Object check, @Nullable Object message, @Nonnull Object... replacements) {
+    public static void notNull(@Nullable Object check, @Nullable Object message, @NotNull Object... replacements) {
         if (check == null) {
             throw new IllegalArgumentException(String.format(String.valueOf(message), replacements));
         }
@@ -96,7 +96,7 @@ public final class Validate {
      * @param replacements The replacements for the formatted string.
      * @throws IllegalArgumentException if the given argument is {@code false}
      */
-    public static void checkArgument(boolean check, @Nullable Object message, @Nonnull Object... replacements) {
+    public static void checkArgument(boolean check, @Nullable Object message, @NotNull Object... replacements) {
         if (!check) {
             throw new IllegalArgumentException(String.format(String.valueOf(message), replacements));
         }

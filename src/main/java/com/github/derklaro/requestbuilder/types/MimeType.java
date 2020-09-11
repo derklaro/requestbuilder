@@ -33,20 +33,19 @@ package com.github.derklaro.requestbuilder.types;
  */
 public class MimeType {
 
-    MimeType(String key, String value) {
+    private final String key;
+    private final String value;
+
+    protected MimeType(String key, String value) {
         this.key = key;
         this.value = value;
     }
 
-    private final String key;
-
-    private final String value;
-
     public String getKey() {
-        return key;
+        return this.key;
     }
 
     public String getValue() {
-        return value;
+        return this.value;
     }
 }

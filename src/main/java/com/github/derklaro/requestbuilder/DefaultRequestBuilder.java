@@ -27,20 +27,16 @@ import com.github.derklaro.requestbuilder.common.Validate;
 import com.github.derklaro.requestbuilder.method.RequestMethod;
 import com.github.derklaro.requestbuilder.result.RequestResult;
 import com.github.derklaro.requestbuilder.types.MimeType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -50,150 +46,148 @@ import java.util.concurrent.TimeUnit;
  * @see RequestBuilder#newBuilder(String, Proxy)
  * @since RB 1.0.0
  */
-class DefaultRequestBuilder implements RequestBuilder {
+public class DefaultRequestBuilder implements RequestBuilder {
 
-    DefaultRequestBuilder(@Nonnull String url, @Nullable Proxy proxy) {
+    private final String url;
+    private final Proxy proxy;
+
+    private Collection<String> body;
+    private Collection<HttpCookie> cookies;
+
+    private Map<String, String> headers;
+
+    private MimeType mimeType;
+    private MimeType accept;
+
+    private Integer fixedOutputStreamLength;
+    private Integer readTimeout;
+    private Integer connectTimeout;
+
+    private RequestMethod requestMethod = RequestMethod.GET;
+
+    private boolean followRedirects = Boolean.FALSE;
+    private boolean useCaches = Boolean.TRUE;
+    private boolean useOutput = Boolean.FALSE;
+    private boolean useInput = Boolean.TRUE;
+    private boolean useUserInteraction = Boolean.FALSE;
+
+    protected DefaultRequestBuilder(@NotNull String url, @NotNull Proxy proxy) {
         Validate.notNull(url, null);
 
         this.url = url;
         this.proxy = proxy;
     }
 
-    private final String url;
-
-    private final Proxy proxy;
-
-    private RequestMethod requestMethod = RequestMethod.GET;
-
-    private final Collection<String> body = new ArrayList<>();
-
-    private final Map<String, String> headers = new ConcurrentHashMap<>();
-
-    private final Collection<HttpCookie> cookies = new ArrayList<>();
-
-    private MimeType mimeType;
-
-    private MimeType accept;
-
-    private Integer fixedOutputStreamLength;
-
-    private boolean followRedirects = Boolean.FALSE;
-
-    private boolean useCaches = Boolean.TRUE;
-
-    private boolean useOutput = Boolean.FALSE;
-
-    private boolean useInput = Boolean.TRUE;
-
-    private boolean useUserInteraction = Boolean.FALSE;
-
-    private Integer readTimeout;
-
-    private Integer connectTimeout;
-
-    @Nonnull
+    @NotNull
     @Override
-    public RequestBuilder setRequestMethod(@Nonnull RequestMethod requestMethod) {
+    public RequestBuilder requestMethod(@NotNull RequestMethod requestMethod) {
         Validate.notNull(requestMethod, "Invalid request method %s", requestMethod);
 
         this.requestMethod = requestMethod;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RequestBuilder addBody(@Nonnull String key, @Nonnull String value) {
+    public RequestBuilder addBody(@NotNull String key, @NotNull String value) {
         Validate.notNull(key, "Invalid key for body %s", key);
         Validate.notNull(value, "Invalid value for header %s", value);
 
-        body.add(key + "=" + value);
-        return this;
+        return this.addBody(key + "=" + value);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RequestBuilder addBody(@Nonnull String body) {
+    public RequestBuilder addBody(@NotNull String body) {
         Validate.notNull(body, "Invalid body string %s", body);
+
+        if (this.body == null) {
+            this.body = new ArrayList<>();
+        }
 
         this.body.add(body);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RequestBuilder addHeader(@Nonnull String key, @Nonnull String value) {
+    public RequestBuilder addHeader(@NotNull String key, @NotNull String value) {
         Validate.notNull(key, "Invalid key for header %s", key);
         Validate.notNull(value, "Invalid value for header %s", value);
 
-        headers.put(key, value);
+        if (this.headers == null) {
+            this.headers = new HashMap<>();
+        }
+
+        this.headers.put(key, value);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RequestBuilder setMimeType(@Nonnull MimeType mimeType) {
+    public RequestBuilder mimeType(@NotNull MimeType mimeType) {
         Validate.notNull(mimeType, "Invalid mime type %s", mimeType);
 
         this.mimeType = mimeType;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RequestBuilder accepts(@Nonnull MimeType mimeType) {
+    public RequestBuilder accepts(@NotNull MimeType mimeType) {
         Validate.notNull(mimeType, "Invalid accept-mime-type %s", mimeType);
 
         this.accept = mimeType;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RequestBuilder setFixedOutputStreamLength(int length) {
+    public RequestBuilder fixedOutputStreamLength(int length) {
         Validate.checkArgument(length > 0, "The fixed stream length must be greater than 0 (%d)", length);
 
         this.fixedOutputStreamLength = length;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RequestBuilder enableRedirectFollow() {
         this.followRedirects = Boolean.TRUE;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RequestBuilder disableCaches() {
         this.useCaches = Boolean.FALSE;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RequestBuilder enableOutput() {
         this.useOutput = Boolean.TRUE;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RequestBuilder disableInput() {
         this.useInput = Boolean.FALSE;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RequestBuilder enableUserInteraction() {
         this.useUserInteraction = Boolean.TRUE;
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RequestBuilder setConnectTimeout(int timeout, @Nonnull TimeUnit timeUnit) {
+    public RequestBuilder connectTimeout(int timeout, @NotNull TimeUnit timeUnit) {
         Validate.notNull(timeout, "Invalid timeout unit %s", timeout);
         Validate.checkArgument(timeout > 0, "Invalid timeout time %d", timeout);
 
@@ -201,9 +195,9 @@ class DefaultRequestBuilder implements RequestBuilder {
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RequestBuilder setReadTimeOut(int timeout, @Nonnull TimeUnit timeUnit) {
+    public RequestBuilder readTimeout(int timeout, @NotNull TimeUnit timeUnit) {
         Validate.notNull(timeout, "Invalid timeout %s", timeout);
         Validate.checkArgument(timeout > 0, "Invalid timeout time %d", timeout);
 
@@ -211,34 +205,45 @@ class DefaultRequestBuilder implements RequestBuilder {
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RequestBuilder addCookie(@Nonnull String name, @Nonnull String value) {
+    public RequestBuilder addCookie(@NotNull String name, @NotNull String value) {
+        Validate.notNull(name, "Cookie name can not be null");
+        Validate.notNull(value, "Cookie value can not be null");
+
+        if (this.cookies == null) {
+            this.cookies = new ArrayList<>();
+        }
+
         this.cookies.add(new HttpCookie(name, value));
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RequestBuilder addCookies(@Nonnull HttpCookie... cookies) {
-        this.cookies.addAll(Arrays.asList(cookies));
-        return this;
+    public RequestBuilder addCookies(@NotNull HttpCookie... cookies) {
+        Validate.notNull(cookies, "Cookies can not be null");
+        return this.addCookies(Arrays.asList(cookies));
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RequestBuilder addCookies(@Nonnull Collection<HttpCookie> cookies) {
+    public RequestBuilder addCookies(@NotNull Collection<HttpCookie> cookies) {
+        Validate.notNull(cookies, "Cookies can not be null");
+
+        if (this.cookies == null) {
+            this.cookies = new ArrayList<>();
+        }
+
         this.cookies.addAll(cookies);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RequestResult fireAndForget() throws IOException {
-        final HttpURLConnection httpURLConnection = choose();
+        final HttpURLConnection httpURLConnection = this.createHttpUrlConnection();
         Validate.notNull(httpURLConnection, "Could not choose connection type or cannot open connection");
-
-        this.headers.forEach(httpURLConnection::setRequestProperty);
 
         httpURLConnection.setRequestMethod(this.requestMethod.name());
 
@@ -248,27 +253,31 @@ class DefaultRequestBuilder implements RequestBuilder {
         httpURLConnection.setAllowUserInteraction(this.useUserInteraction);
         httpURLConnection.setInstanceFollowRedirects(this.followRedirects);
 
-        if (fixedOutputStreamLength != null && fixedOutputStreamLength > 0) {
-            httpURLConnection.setFixedLengthStreamingMode(fixedOutputStreamLength);
+        if (this.headers != null) {
+            this.headers.forEach(httpURLConnection::setRequestProperty);
         }
 
-        if (readTimeout != null && readTimeout > 0) {
-            httpURLConnection.setReadTimeout(readTimeout);
+        if (this.fixedOutputStreamLength != null && this.fixedOutputStreamLength > 0) {
+            httpURLConnection.setFixedLengthStreamingMode(this.fixedOutputStreamLength);
         }
 
-        if (connectTimeout != null && connectTimeout > 0) {
-            httpURLConnection.setConnectTimeout(connectTimeout);
+        if (this.readTimeout != null && this.readTimeout > 0) {
+            httpURLConnection.setReadTimeout(this.readTimeout);
+        }
+
+        if (this.connectTimeout != null && this.connectTimeout > 0) {
+            httpURLConnection.setConnectTimeout(this.connectTimeout);
         }
 
         if (this.mimeType != null) {
-            httpURLConnection.setRequestProperty("Content-Type", mimeType.getValue());
+            httpURLConnection.setRequestProperty("Content-Type", this.mimeType.getValue());
         }
 
         if (this.accept != null) {
-            httpURLConnection.setRequestProperty("Accept", accept.getValue());
+            httpURLConnection.setRequestProperty("Accept", this.accept.getValue());
         }
 
-        if (this.cookies.size() > 0) {
+        if (this.cookies != null) {
             StringBuilder stringBuilder = new StringBuilder();
             for (HttpCookie cookie : this.cookies) {
                 stringBuilder.append(cookie.getName()).append("=").append(cookie.getValue()).append(",");
@@ -278,10 +287,10 @@ class DefaultRequestBuilder implements RequestBuilder {
         }
 
         httpURLConnection.connect();
-        return RequestResult.create(httpURLConnection, body);
+        return RequestResult.create(httpURLConnection, this.body);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public CompletableFuture<RequestResult> fireAndForgetAsynchronously() {
         return CompletableFuture.supplyAsync(() -> {
@@ -294,12 +303,8 @@ class DefaultRequestBuilder implements RequestBuilder {
     }
 
     @Nullable
-    private HttpURLConnection choose() {
+    private HttpURLConnection createHttpUrlConnection() {
         try {
-            if (this.proxy == null) {
-                return (HttpURLConnection) new URL(this.url).openConnection();
-            }
-
             return (HttpURLConnection) new URL(this.url).openConnection(this.proxy);
         } catch (final IOException ex) {
             ex.printStackTrace();
