@@ -127,7 +127,7 @@ public interface RequestBuilder extends AutoCloseable {
      * Sets the request method of the connection
      *
      * @param requestMethod The request method which should be used
-     * @return The current instance of the class
+     * @return The current instance of the class, for chaining
      * @throws IllegalArgumentException If the given method is null
      * @deprecated Use {@link #requestMethod(RequestMethod)} instead
      */
@@ -142,39 +142,55 @@ public interface RequestBuilder extends AutoCloseable {
      * Sets the request method of the connection
      *
      * @param requestMethod The request method which should be used
-     * @return The current instance of the class
+     * @return The current instance of the class, for chaining
      * @throws IllegalArgumentException If the given method is null
      */
     @NotNull
     RequestBuilder requestMethod(@NotNull RequestMethod requestMethod);
 
     /**
-     * Adds a body to the connection. Ensure you've enabled output by using {@link #enableOutput()}
+     * Adds a body to the connection. This method calls {@link #enableOutput()}.
      *
      * @param key   The key of the body parameter
      * @param value The value of the body parameter
-     * @return The current instance of the class
+     * @return The current instance of the class, for chaining
      * @throws IllegalArgumentException If the key or value is null
+     * @deprecated Use {@link #addBody(byte[])} instead
      */
     @NotNull
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
     RequestBuilder addBody(@NotNull String key, @NotNull String value);
 
     /**
-     * Adds a body to the connection. Ensure you've enabled output by using {@link #enableOutput()}
+     * Adds a body to the connection. This method calls {@link #enableOutput()}.
      *
      * @param body The complete body as one string
-     * @return The current instance of the class
+     * @return The current instance of the class, for chaining
+     * @throws IllegalArgumentException If the body string is null
+     * @deprecated Use {@link #addBody(byte[])} instead
+     */
+    @NotNull
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
+    RequestBuilder addBody(@NotNull String body);
+
+    /**
+     * Adds a body to the connection. This method calls {@link #enableOutput()}.
+     *
+     * @param body The complete body as a byte array
+     * @return The current instance of the class, for chaining
      * @throws IllegalArgumentException If the body string is null
      */
     @NotNull
-    RequestBuilder addBody(@NotNull String body);
+    RequestBuilder addBody(@NotNull byte[] body);
 
     /**
      * Adds a header to the connection
      *
      * @param key   The key of the header
      * @param value The value of the header
-     * @return The current instance of the class
+     * @return The current instance of the class, for chaining
      * @throws IllegalArgumentException If the key or value is null
      */
     @NotNull
@@ -184,7 +200,7 @@ public interface RequestBuilder extends AutoCloseable {
      * Sets the mime type of the connection which should get sent
      *
      * @param mimeType The mime type which should be used
-     * @return The current instance of the class
+     * @return The current instance of the class, for chaining
      * @throws IllegalArgumentException If the mime type is null
      * @see MimeTypes#getMimeType(String)
      * @deprecated Use {@link #mimeType(MimeType)} instead
@@ -200,7 +216,7 @@ public interface RequestBuilder extends AutoCloseable {
      * Sets the mime type of the connection which should get sent
      *
      * @param mimeType The mime type which should be used
-     * @return The current instance of the class
+     * @return The current instance of the class, for chaining
      * @throws IllegalArgumentException If the mime type is null
      * @see MimeTypes#getMimeType(String)
      */
@@ -211,7 +227,7 @@ public interface RequestBuilder extends AutoCloseable {
      * Sets the mime type which is accepted by the connection
      *
      * @param mimeType The mime type which should be accepted
-     * @return The current instance of the class
+     * @return The current instance of the class, for chaining
      * @throws IllegalArgumentException If the mime type is null
      * @see MimeTypes#getMimeType(String)
      * @since RB 1.0.1
@@ -223,7 +239,7 @@ public interface RequestBuilder extends AutoCloseable {
      * Sets the fixed stream length of the outgoing connection
      *
      * @param length The fixed stream length of the connection
-     * @return The current instance of the class
+     * @return The current instance of the class, for chaining
      * @throws IllegalArgumentException if the length is {@code < 0}
      * @deprecated Use {@link #fixedOutputStreamLength(int)} instead
      */
@@ -238,7 +254,7 @@ public interface RequestBuilder extends AutoCloseable {
      * Sets the fixed stream length of the outgoing connection
      *
      * @param length The fixed stream length of the connection
-     * @return The current instance of the class
+     * @return The current instance of the class, for chaining
      * @throws IllegalArgumentException if the length is {@code < 0}
      */
     @NotNull
@@ -247,7 +263,7 @@ public interface RequestBuilder extends AutoCloseable {
     /**
      * Enables the follow of the redirects from the web server
      *
-     * @return The current instance of the class
+     * @return The current instance of the class, for chaining
      */
     @NotNull
     RequestBuilder enableRedirectFollow();

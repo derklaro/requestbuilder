@@ -27,13 +27,18 @@ import com.github.derklaro.requestbuilder.RequestBuilder;
 import com.github.derklaro.requestbuilder.common.Validate;
 import com.github.derklaro.requestbuilder.result.http.StatusCode;
 import com.github.derklaro.requestbuilder.result.stream.StreamType;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 /**
  * This class represents any connection to a web host created by {@link RequestBuilder#fireAndForget()}.
@@ -108,9 +113,21 @@ import java.util.Collection;
 public interface RequestResult extends AutoCloseable {
 
     @NotNull
-    static RequestResult create(@NotNull HttpURLConnection httpURLConnection, @NotNull Collection<String> body) {
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval
+    static RequestResult create(@NotNull HttpURLConnection httpURLConnection, @Nullable Collection<String> body) {
         Validate.notNull(httpURLConnection, "Pleas provide a non-null connection");
-        Validate.notNull(body, "Body cannot be null");
+
+        if (body == null) {
+            return RequestResult.createDefault(httpURLConnection, Collections.emptyList());
+        }
+
+        return RequestResult.createDefault(httpURLConnection, body.stream().map(s -> s.getBytes(StandardCharsets.UTF_8)).collect(Collectors.toList()));
+    }
+
+    @NotNull
+    static RequestResult createDefault(@NotNull HttpURLConnection httpURLConnection, @Nullable Collection<byte[]> body) {
+        Validate.notNull(httpURLConnection, "Pleas provide a non-null connection");
 
         return new DefaultRequestResult(httpURLConnection, body);
     }

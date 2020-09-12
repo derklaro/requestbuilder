@@ -35,6 +35,7 @@ import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -51,7 +52,7 @@ public class DefaultRequestBuilder implements RequestBuilder {
     private final String url;
     private final Proxy proxy;
 
-    private Collection<String> body;
+    private Collection<byte[]> bodies;
     private Collection<HttpCookie> cookies;
 
     private Map<String, String> headers;
@@ -101,11 +102,19 @@ public class DefaultRequestBuilder implements RequestBuilder {
     public RequestBuilder addBody(@NotNull String body) {
         Validate.notNull(body, "Invalid body string %s", body);
 
-        if (this.body == null) {
-            this.body = new ArrayList<>();
+        return this.addBody(body.getBytes(StandardCharsets.UTF_8));
+    }
+
+    @Override
+    public @NotNull RequestBuilder addBody(@NotNull byte[] body) {
+        Validate.notNull(body, "The body of a connection may not be null");
+
+        if (this.bodies == null) {
+            this.enableOutput();
+            this.bodies = new ArrayList<>();
         }
 
-        this.body.add(body);
+        this.bodies.add(body);
         return this;
     }
 
@@ -287,7 +296,7 @@ public class DefaultRequestBuilder implements RequestBuilder {
         }
 
         httpURLConnection.connect();
-        return RequestResult.create(httpURLConnection, this.body);
+        return RequestResult.createDefault(httpURLConnection, this.bodies);
     }
 
     @NotNull

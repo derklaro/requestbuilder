@@ -50,14 +50,14 @@ public class DefaultRequestResult implements RequestResult {
 
     private final HttpURLConnection httpURLConnection;
 
-    protected DefaultRequestResult(@NotNull HttpURLConnection httpURLConnection, @Nullable Collection<String> body) {
-        Validate.notNull(httpURLConnection, "Pleas provide a non-null connection");
+    protected DefaultRequestResult(@NotNull HttpURLConnection httpURLConnection, @Nullable Collection<byte[]> body) {
+        Validate.notNull(httpURLConnection, "The connection may not be null");
 
         this.httpURLConnection = httpURLConnection;
         if (body != null) {
-            body.forEach(s -> {
+            body.forEach(bytes -> {
                 try {
-                    httpURLConnection.getOutputStream().write(s.getBytes(StandardCharsets.UTF_8));
+                    httpURLConnection.getOutputStream().write(bytes);
                     httpURLConnection.getOutputStream().flush();
                 } catch (final IOException ex) {
                     ex.printStackTrace();
