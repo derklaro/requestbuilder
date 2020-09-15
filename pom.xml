@@ -29,7 +29,7 @@
 
     <groupId>com.github.derklaro</groupId>
     <artifactId>requestbuilder-root</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
 
     <issueManagement>
         <system>GitHub</system>

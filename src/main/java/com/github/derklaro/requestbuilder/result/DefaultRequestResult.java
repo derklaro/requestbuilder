@@ -137,7 +137,7 @@ public class DefaultRequestResult implements RequestResult {
     @NotNull
     @Override
     public String getResultAsString() {
-        if (this.getStatusCode() == 200) {
+        if (this.getStatusCode() >= 200 && this.getStatusCode() <= 299) {
             return this.getSuccessResultAsString();
         }
 

@@ -27,7 +27,7 @@ Maven dependency:
 <dependency>
     <groupId>com.github.derklaro</groupId>
     <artifactId>requestbuilder</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
 </dependency>
 ```
 
