@@ -32,21 +32,21 @@ package com.github.derklaro.requestbuilder.result.stream;
  */
 public enum StreamType {
 
-    /**
-     * Returns the error stream of connection. Works only if the StatusCode != {@code 200}.
-     */
-    ERROR,
+  /**
+   * Returns the error stream of connection. Works only if the StatusCode != {@code 200}.
+   */
+  ERROR,
 
-    /**
-     * Returns the default input stream of the connection. Works only if the StatusCode == {@code 200}.
-     */
-    DEFAULT,
+  /**
+   * Returns the default input stream of the connection. Works only if the StatusCode == {@code 200}.
+   */
+  DEFAULT,
 
-    /**
-     * Chooses the correct stream from the options. (That means if StatusCode != {@code 200}
-     * it returns {@link #ERROR} if the StatusCode == {@code 200} it returns {@link #DEFAULT}.
-     *
-     * @since RB 1.0.1
-     */
-    CHOOSE
+  /**
+   * Chooses the correct stream from the options. (That means if StatusCode != {@code 200} it returns {@link #ERROR} if
+   * the StatusCode == {@code 200} it returns {@link #DEFAULT}.
+   *
+   * @since RB 1.0.1
+   */
+  CHOOSE
 }

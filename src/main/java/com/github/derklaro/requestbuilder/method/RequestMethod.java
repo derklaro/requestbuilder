@@ -27,8 +27,7 @@ import com.github.derklaro.requestbuilder.RequestBuilder;
 import com.github.derklaro.requestbuilder.result.RequestResult;
 
 /**
- * Represents any request method which can be used in the {@link RequestBuilder}
- * when creating a request to a web host.
+ * Represents any request method which can be used in the {@link RequestBuilder} when creating a request to a web host.
  * <p>
  * Basically you can use this snippet to use this methods:
  *
@@ -40,52 +39,48 @@ import com.github.derklaro.requestbuilder.result.RequestResult;
  * <p>
  * The web server should handle the request method in the specified else it will throw a
  * <a href="https://docs.oracle.com/javaee/7/api/javax/ws/rs/BadRequestException.html">
- * BadRequestException</a>.
- * Please check the {@link RequestResult#getStatusCode()} if it's a {@code 400}.
+ * BadRequestException</a>. Please check the {@link RequestResult#getStatusCode()} if it's a {@code 400}.
  *
  * @author derklaro
  * @see RequestResult#getStatusCode()
- * @see RequestBuilder#setRequestMethod(RequestMethod)
+ * @see RequestBuilder#requestMethod(RequestMethod)
  * @since RB 1.0.0
  */
 public enum RequestMethod {
 
-    /**
-     * The GET method requests a representation of the specified resource. Requests using GET should
-     * only retrieve data.
-     */
-    GET,
+  /**
+   * The GET method requests a representation of the specified resource. Requests using GET should only retrieve data.
+   */
+  GET,
 
-    /**
-     * The POST method is used to submit an entity to the specified resource, often causing a change
-     * in state or side effects on the server.
-     */
-    POST,
+  /**
+   * The POST method is used to submit an entity to the specified resource, often causing a change in state or side
+   * effects on the server.
+   */
+  POST,
 
-    /**
-     * The HEAD method asks for a response identical to that of a GET request, but without the
-     * response body.
-     */
-    HEAD,
+  /**
+   * The HEAD method asks for a response identical to that of a GET request, but without the response body.
+   */
+  HEAD,
 
-    /**
-     * The OPTIONS method is used to describe the communication options for the target resource.
-     */
-    OPTIONS,
+  /**
+   * The OPTIONS method is used to describe the communication options for the target resource.
+   */
+  OPTIONS,
 
-    /**
-     * The PUT method replaces all current representations of the target resource with the request
-     * payload.
-     */
-    PUT,
+  /**
+   * The PUT method replaces all current representations of the target resource with the request payload.
+   */
+  PUT,
 
-    /**
-     * The DELETE method deletes the specified resource.
-     */
-    DELETE,
+  /**
+   * The DELETE method deletes the specified resource.
+   */
+  DELETE,
 
-    /**
-     * The TRACE method performs a message loop-back test along the path to the target resource.
-     */
-    TRACE
+  /**
+   * The TRACE method performs a message loop-back test along the path to the target resource.
+   */
+  TRACE
 }

@@ -27,24 +27,19 @@ import com.github.derklaro.requestbuilder.RequestBuilder;
 import com.github.derklaro.requestbuilder.common.Validate;
 import com.github.derklaro.requestbuilder.result.http.StatusCode;
 import com.github.derklaro.requestbuilder.result.stream.StreamType;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.stream.Collectors;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This class represents any connection to a web host created by {@link RequestBuilder#fireAndForget()}.
  * <p>
- * This class is used to wrap the result of a request. Let's say you are opening a connection to
- * {@code https://gist.github.com/yaotest/4064031} by using:
+ * This class is used to wrap the result of a request. Let's say you are opening a connection to {@code
+ * https://gist.github.com/yaotest/4064031} by using:
  * <pre>{@code
  * public static synchronized void main(String... args) {
  *     RequestResult result = RequestBuilder.newBuilder("https://gist.github.com/yaotest/4064031", null).fireAndForget();
@@ -101,8 +96,8 @@ import java.util.stream.Collectors;
  * String resultMessage = result.getResultAsString(); // error or success
  * }</pre>
  * <p>
- * This class is extremely useful to prevent a lot of code coming up by the time and prevents messy
- * classes full connection code.
+ * This class is extremely useful to prevent a lot of code coming up by the time and prevents messy classes full
+ * connection code.
  *
  * @author derklaro
  * @version RB 1.0.3
@@ -112,125 +107,112 @@ import java.util.stream.Collectors;
  */
 public interface RequestResult extends AutoCloseable {
 
-    @NotNull
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    static RequestResult create(@NotNull HttpURLConnection httpURLConnection, @Nullable Collection<String> body) {
-        Validate.notNull(httpURLConnection, "Pleas provide a non-null connection");
+  @NotNull
+  static RequestResult createDefault(@NotNull HttpURLConnection httpURLConnection, @Nullable Collection<byte[]> body) {
+    Validate.notNull(httpURLConnection, "Pleas provide a non-null connection");
 
-        if (body == null) {
-            return RequestResult.createDefault(httpURLConnection, Collections.emptyList());
-        }
+    return new DefaultRequestResult(httpURLConnection, body);
+  }
 
-        return RequestResult.createDefault(httpURLConnection, body.stream().map(s -> s.getBytes(StandardCharsets.UTF_8)).collect(Collectors.toList()));
-    }
+  /**
+   * Returns the needed {@link InputStream} of the given {@link StreamType}. This will not work on successful connection
+   * when using {@link StreamType#ERROR} and not on failed connection ({@link #getStatusCode()} != {@code 200}) when
+   * using {@link StreamType#DEFAULT}. For more safety in programs use {@link StreamType#CHOOSE}.
+   *
+   * @param streamType The stream type which should get used when choosing the stream.
+   * @return The input stream of the given type or on the type given by the input stream when using {@link
+   * StreamType#CHOOSE}
+   * @throws RuntimeException if the connection is not connected or already closed
+   */
+  @NotNull
+  InputStream getStream(@NotNull StreamType streamType);
 
-    @NotNull
-    static RequestResult createDefault(@NotNull HttpURLConnection httpURLConnection, @Nullable Collection<byte[]> body) {
-        Validate.notNull(httpURLConnection, "Pleas provide a non-null connection");
+  /**
+   * Returns the output stream of the connection if the connection is marked for output using {@link
+   * RequestBuilder#enableOutput()}.
+   *
+   * @return The {@link OutputStream} of the connection to the host
+   * @throws RuntimeException if the connection is not connected or already closed
+   */
+  @NotNull
+  OutputStream getOutputStream();
 
-        return new DefaultRequestResult(httpURLConnection, body);
-    }
+  /**
+   * @return If the connection is still connected
+   */
+  boolean isConnected();
 
-    /**
-     * Returns the needed {@link InputStream} of the given {@link StreamType}.
-     * This will not work on successful connection when using {@link StreamType#ERROR} and not on
-     * failed connection ({@link #getStatusCode()} != {@code 200}) when using {@link StreamType#DEFAULT}.
-     * For more safety in programs use {@link StreamType#CHOOSE}.
-     *
-     * @param streamType The stream type which should get used when choosing the stream.
-     * @return The input stream of the given type or on the type given by the input stream when using {@link StreamType#CHOOSE}
-     * @throws RuntimeException if the connection is not connected or already closed
-     */
-    @NotNull
-    InputStream getStream(@NotNull StreamType streamType);
+  /**
+   * @return Checks if the request to the web server succeeded
+   */
+  boolean hasFailed();
 
-    /**
-     * Returns the output stream of the connection if the connection is marked for output using
-     * {@link RequestBuilder#enableOutput()}.
-     *
-     * @return The {@link OutputStream} of the connection to the host
-     * @throws RuntimeException if the connection is not connected or already closed
-     */
-    @NotNull
-    OutputStream getOutputStream();
+  /**
+   * Reads the input stream of the connection and returns the result as string.
+   *
+   * @return The string created from the default input stream of the connection to the host.
+   * @throws RuntimeException if the connection is not connected, already closed or the request wasn't successful
+   * @see #hasFailed()
+   * @see #isConnected()
+   */
+  @NotNull
+  String getSuccessResultAsString();
 
-    /**
-     * @return If the connection is still connected
-     */
-    boolean isConnected();
+  /**
+   * Reads the error input stream of the connection and returns the result as string.
+   *
+   * @return The string created from the error input stream of the connection to the host.
+   * @throws RuntimeException if the connection is not connected, already closed or the request was successful
+   * @see #hasFailed()
+   * @see #isConnected()
+   */
+  @NotNull
+  String getErrorResultAsString();
 
-    /**
-     * @return Checks if the request to the web server succeeded
-     */
-    boolean hasFailed();
+  /**
+   * Returns either the success result or the error result.
+   *
+   * @return The string created from the error or default input stream of the connection to the host.
+   * @throws RuntimeException if the connection is not connected or already closed
+   * @see #hasFailed()
+   * @see #isConnected()
+   * @see #getSuccessResultAsString()
+   * @see #getErrorResultAsString()
+   */
+  @NotNull
+  String getResultAsString();
 
-    /**
-     * Reads the input stream of the connection and returns the result as string.
-     *
-     * @return The string created from the default input stream of the connection to the host.
-     * @throws RuntimeException if the connection is not connected, already closed or the request wasn't successful
-     * @see #hasFailed()
-     * @see #isConnected()
-     */
-    @NotNull
-    String getSuccessResultAsString();
+  /**
+   * Returns all cookies which are given in the header of the connection result.
+   *
+   * @return All cookies which were sent by the remote side
+   * @since RB 1.0.2
+   */
+  @NotNull
+  Collection<HttpCookie> getCookies();
 
-    /**
-     * Reads the error input stream of the connection and returns the result as string.
-     *
-     * @return The string created from the error input stream of the connection to the host.
-     * @throws RuntimeException if the connection is not connected, already closed or the request was successful
-     * @see #hasFailed()
-     * @see #isConnected()
-     */
-    @NotNull
-    String getErrorResultAsString();
+  /**
+   * Returns all cookies which are given in the header of the connection result.
+   *
+   * @param cookiesHeader The header field name in which the cookies got stored by the remote side
+   * @return All cookies which were sent by the remote side
+   * @since RB 1.0.2
+   */
+  @NotNull
+  Collection<HttpCookie> getCookies(@NotNull String cookiesHeader);
 
-    /**
-     * Returns either the success result or the error result.
-     *
-     * @return The string created from the error or default input stream of the connection to the host.
-     * @throws RuntimeException if the connection is not connected or already closed
-     * @see #hasFailed()
-     * @see #isConnected()
-     * @see #getSuccessResultAsString()
-     * @see #getErrorResultAsString()
-     */
-    @NotNull
-    String getResultAsString();
+  /**
+   * @return The status code of the connection or {@code -1} if the connection is not connected or already closed
+   */
+  int getStatusCode();
 
-    /**
-     * Returns all cookies which are given in the header of the connection result.
-     *
-     * @return All cookies which were sent by the remote side
-     * @since RB 1.0.2
-     */
-    @NotNull
-    Collection<HttpCookie> getCookies();
-
-    /**
-     * Returns all cookies which are given in the header of the connection result.
-     *
-     * @param cookiesHeader The header field name in which the cookies got stored by the remote side
-     * @return All cookies which were sent by the remote side
-     * @since RB 1.0.2
-     */
-    @NotNull
-    Collection<HttpCookie> getCookies(@NotNull String cookiesHeader);
-
-    /**
-     * @return The status code of the connection or {@code -1} if the connection is not connected or already closed
-     */
-    int getStatusCode();
-
-    /**
-     * @return The status as object based on the returned status code of the connection
-     * @throws IllegalArgumentException If the status code is can not get identified.
-     * @since RB 1.0.3
-     */
-    @NotNull
-    default StatusCode getStatus() {
-        return StatusCode.getByResult(this.getStatusCode());
-    }
+  /**
+   * @return The status as object based on the returned status code of the connection
+   * @throws IllegalArgumentException If the status code is can not get identified.
+   * @since RB 1.0.3
+   */
+  @NotNull
+  default StatusCode getStatus() {
+    return StatusCode.getByResult(this.getStatusCode());
+  }
 }

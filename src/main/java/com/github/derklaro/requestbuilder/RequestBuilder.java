@@ -28,26 +28,24 @@ import com.github.derklaro.requestbuilder.method.RequestMethod;
 import com.github.derklaro.requestbuilder.result.RequestResult;
 import com.github.derklaro.requestbuilder.types.MimeType;
 import com.github.derklaro.requestbuilder.types.MimeTypes;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Range;
-
 import java.io.IOException;
 import java.net.HttpCookie;
 import java.net.Proxy;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Range;
 
 /**
- * This class represents any {@link RequestBuilder} which can be accessed by any method which returns
- * a {@link RequestBuilder}.
+ * This class represents any {@link RequestBuilder} which can be accessed by any method which returns a {@link
+ * RequestBuilder}.
  * <br>
- * With this class class you basically can create a connection to every web server you need and can
- * requested a parsed result from the input streams using plain java.
+ * With this class you basically can create a connection to every web server you need and can request a parsed result
+ * from the input streams using plain java.
  * <br>
- * By default a implementation of this class is the {@link DefaultRequestBuilder} which can be accessed
- * using {@link RequestBuilder#newBuilder(String, Proxy)}.
+ * By default a implementation of this class is the {@link DefaultRequestBuilder} which can be accessed using {@link
+ * RequestBuilder#newBuilder(String, Proxy)}.
  * <p>
  * To create a new request builder you can use:
  *
@@ -91,316 +89,224 @@ import java.util.concurrent.TimeUnit;
  */
 public interface RequestBuilder extends AutoCloseable {
 
-    /**
-     * Creates a new request builder instance
-     *
-     * @param url The target web url which you want to open
-     * @return A new request builder instance with the given target url
-     * @throws IllegalArgumentException If the given url is null
-     * @see RequestBuilder#newBuilder(String, Proxy)
-     */
-    @NotNull
-    static RequestBuilder newBuilder(@NotNull String url) {
-        return newBuilder(url, Proxy.NO_PROXY);
-    }
+  /**
+   * Creates a new request builder instance
+   *
+   * @param url The target web url which you want to open
+   * @return A new request builder instance with the given target url
+   * @throws IllegalArgumentException If the given url is null
+   * @see RequestBuilder#newBuilder(String, Proxy)
+   */
+  @NotNull
+  static RequestBuilder newBuilder(@NotNull String url) {
+    return newBuilder(url, Proxy.NO_PROXY);
+  }
 
-    /**
-     * Creates a new request builder instance
-     *
-     * @param url   The target web url which you want to open
-     * @param proxy The proxy through which the connection should go
-     * @return A new request builder instance with the given target url
-     * @throws IllegalArgumentException If the given url is null
-     */
-    @NotNull
-    static RequestBuilder newBuilder(@NotNull String url, /* @NotNull */ Proxy proxy) {
-        Validate.notNull(url, "Invalid url %s", url);
-        if (proxy == null) {
-            System.err.println("The proxy provided should be not-null (for no proxy use Proxy.NO_PROXY)");
-            proxy = Proxy.NO_PROXY;
-        }
+  /**
+   * Creates a new request builder instance
+   *
+   * @param url   The target web url which you want to open
+   * @param proxy The proxy through which the connection should go
+   * @return A new request builder instance with the given target url
+   * @throws IllegalArgumentException If the given url is null
+   */
+  @NotNull
+  static RequestBuilder newBuilder(@NotNull String url, @NotNull Proxy proxy) {
+    Validate.notNull(url, "url");
+    Validate.notNull(proxy, "proxy");
 
-        return new DefaultRequestBuilder(url, proxy);
-    }
+    return new DefaultRequestBuilder(url, proxy);
+  }
 
-    /**
-     * Sets the request method of the connection
-     *
-     * @param requestMethod The request method which should be used
-     * @return The current instance of the class, for chaining
-     * @throws IllegalArgumentException If the given method is null
-     * @deprecated Use {@link #requestMethod(RequestMethod)} instead
-     */
-    @NotNull
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    default RequestBuilder setRequestMethod(@NotNull RequestMethod requestMethod) {
-        return this.requestMethod(requestMethod);
-    }
+  /**
+   * Sets the request method of the connection
+   *
+   * @param requestMethod The request method which should be used
+   * @return The current instance of the class, for chaining
+   * @throws IllegalArgumentException If the given method is null
+   */
+  @NotNull
+  RequestBuilder requestMethod(@NotNull RequestMethod requestMethod);
 
-    /**
-     * Sets the request method of the connection
-     *
-     * @param requestMethod The request method which should be used
-     * @return The current instance of the class, for chaining
-     * @throws IllegalArgumentException If the given method is null
-     */
-    @NotNull
-    RequestBuilder requestMethod(@NotNull RequestMethod requestMethod);
+  /**
+   * Adds a body to the connection. This method calls {@link #enableOutput()}.
+   *
+   * @param body The complete body as one string
+   * @return The current instance of the class, for chaining
+   * @throws IllegalArgumentException If the body string is null
+   * @deprecated Use {@link #addBody(byte[])} instead
+   */
+  @NotNull
+  RequestBuilder addBody(@NotNull String body);
 
-    /**
-     * Adds a body to the connection. This method calls {@link #enableOutput()}.
-     *
-     * @param key   The key of the body parameter
-     * @param value The value of the body parameter
-     * @return The current instance of the class, for chaining
-     * @throws IllegalArgumentException If the key or value is null
-     * @deprecated Use {@link #addBody(byte[])} instead
-     */
-    @NotNull
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    RequestBuilder addBody(@NotNull String key, @NotNull String value);
+  /**
+   * Adds a body to the connection. This method calls {@link #enableOutput()}.
+   *
+   * @param body The complete body as a byte array
+   * @return The current instance of the class, for chaining
+   * @throws IllegalArgumentException If the body string is null
+   */
+  @NotNull
+  RequestBuilder addBody(byte[] body);
 
-    /**
-     * Adds a body to the connection. This method calls {@link #enableOutput()}.
-     *
-     * @param body The complete body as one string
-     * @return The current instance of the class, for chaining
-     * @throws IllegalArgumentException If the body string is null
-     * @deprecated Use {@link #addBody(byte[])} instead
-     */
-    @NotNull
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    RequestBuilder addBody(@NotNull String body);
+  /**
+   * Adds a header to the connection
+   *
+   * @param key   The key of the header
+   * @param value The value of the header
+   * @return The current instance of the class, for chaining
+   * @throws IllegalArgumentException If the key or value is null
+   */
+  @NotNull
+  RequestBuilder addHeader(@NotNull String key, @NotNull String value);
 
-    /**
-     * Adds a body to the connection. This method calls {@link #enableOutput()}.
-     *
-     * @param body The complete body as a byte array
-     * @return The current instance of the class, for chaining
-     * @throws IllegalArgumentException If the body string is null
-     */
-    @NotNull
-    RequestBuilder addBody(@NotNull byte[] body);
+  /**
+   * Sets the mime type of the connection which should get sent
+   *
+   * @param mimeType The mime type which should be used
+   * @return The current instance of the class, for chaining
+   * @throws IllegalArgumentException If the mime type is null
+   * @see MimeTypes#getMimeType(String)
+   */
+  @NotNull
+  RequestBuilder mimeType(@NotNull MimeType mimeType);
 
-    /**
-     * Adds a header to the connection
-     *
-     * @param key   The key of the header
-     * @param value The value of the header
-     * @return The current instance of the class, for chaining
-     * @throws IllegalArgumentException If the key or value is null
-     */
-    @NotNull
-    RequestBuilder addHeader(@NotNull String key, @NotNull String value);
+  /**
+   * Sets the mime type which is accepted by the connection
+   *
+   * @param mimeType The mime type which should be accepted
+   * @return The current instance of the class, for chaining
+   * @throws IllegalArgumentException If the mime type is null
+   * @see MimeTypes#getMimeType(String)
+   * @since RB 1.0.1
+   */
+  @NotNull
+  RequestBuilder accepts(@NotNull MimeType mimeType);
 
-    /**
-     * Sets the mime type of the connection which should get sent
-     *
-     * @param mimeType The mime type which should be used
-     * @return The current instance of the class, for chaining
-     * @throws IllegalArgumentException If the mime type is null
-     * @see MimeTypes#getMimeType(String)
-     * @deprecated Use {@link #mimeType(MimeType)} instead
-     */
-    @NotNull
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    default RequestBuilder setMimeType(@NotNull MimeType mimeType) {
-        return this.mimeType(mimeType);
-    }
+  /**
+   * Sets the fixed stream length of the outgoing connection
+   *
+   * @param length The fixed stream length of the connection
+   * @return The current instance of the class, for chaining
+   * @throws IllegalArgumentException if the length is {@code < 0}
+   */
+  @NotNull
+  RequestBuilder fixedOutputStreamLength(@Range(from = 0, to = Integer.MAX_VALUE) int length);
 
-    /**
-     * Sets the mime type of the connection which should get sent
-     *
-     * @param mimeType The mime type which should be used
-     * @return The current instance of the class, for chaining
-     * @throws IllegalArgumentException If the mime type is null
-     * @see MimeTypes#getMimeType(String)
-     */
-    @NotNull
-    RequestBuilder mimeType(@NotNull MimeType mimeType);
+  /**
+   * Enables the follow of the redirects from the web server
+   *
+   * @return The current instance of the class, for chaining
+   */
+  @NotNull
+  RequestBuilder enableRedirectFollow();
 
-    /**
-     * Sets the mime type which is accepted by the connection
-     *
-     * @param mimeType The mime type which should be accepted
-     * @return The current instance of the class, for chaining
-     * @throws IllegalArgumentException If the mime type is null
-     * @see MimeTypes#getMimeType(String)
-     * @since RB 1.0.1
-     */
-    @NotNull
-    RequestBuilder accepts(@NotNull MimeType mimeType);
+  /**
+   * Disables the use of caches when connection and reading the data from the web server
+   *
+   * @return The current instance of this class
+   */
+  @NotNull
+  RequestBuilder disableCaches();
 
-    /**
-     * Sets the fixed stream length of the outgoing connection
-     *
-     * @param length The fixed stream length of the connection
-     * @return The current instance of the class, for chaining
-     * @throws IllegalArgumentException if the length is {@code < 0}
-     * @deprecated Use {@link #fixedOutputStreamLength(int)} instead
-     */
-    @NotNull
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    default RequestBuilder setFixedOutputStreamLength(@Range(from = 0, to = Integer.MAX_VALUE) int length) {
-        return this.fixedOutputStreamLength(length);
-    }
+  /**
+   * Enables the output sent to the remote host with the current connection
+   *
+   * @return The current instance oif this class
+   */
+  @NotNull
+  RequestBuilder enableOutput();
 
-    /**
-     * Sets the fixed stream length of the outgoing connection
-     *
-     * @param length The fixed stream length of the connection
-     * @return The current instance of the class, for chaining
-     * @throws IllegalArgumentException if the length is {@code < 0}
-     */
-    @NotNull
-    RequestBuilder fixedOutputStreamLength(@Range(from = 0, to = Integer.MAX_VALUE) int length);
+  /**
+   * Disables the option that the remote host can send a result to the connection input
+   *
+   * @return The current instance of this class
+   */
+  @NotNull
+  RequestBuilder disableInput();
 
-    /**
-     * Enables the follow of the redirects from the web server
-     *
-     * @return The current instance of the class, for chaining
-     */
-    @NotNull
-    RequestBuilder enableRedirectFollow();
+  /**
+   * Enables the possibility for the user to interact with the connection
+   *
+   * @return The current instance of this class
+   */
+  @NotNull
+  RequestBuilder enableUserInteraction();
 
-    /**
-     * Disables the use of caches when connection and reading the data from the web server
-     *
-     * @return The current instance of this class
-     */
-    @NotNull
-    RequestBuilder disableCaches();
+  /**
+   * Sets the timeout time for the connection
+   *
+   * @param timeout  The time which should be wait until the connection timout
+   * @param timeUnit The time unit of the connect timout
+   * @return The current instance of this class
+   * @throws IllegalArgumentException If either the TimeUnit is null or timeout is {@code < 0}
+   */
+  @NotNull
+  RequestBuilder connectTimeout(@Range(from = 0, to = Integer.MAX_VALUE) int timeout, @NotNull TimeUnit timeUnit);
 
-    /**
-     * Enables the output sent to the remote host with the current connection
-     *
-     * @return The current instance oif this class
-     */
-    @NotNull
-    RequestBuilder enableOutput();
+  /**
+   * Sets the read timeout of the connection (only needed if input is enabled)
+   *
+   * @param timeout  The time which should be wait until the read timout
+   * @param timeUnit The time unit of the read timout
+   * @return The current instance of this class
+   * @throws IllegalArgumentException If either the TimeUnit is null or timeout is {@code < 0}
+   */
+  @NotNull
+  RequestBuilder readTimeout(int timeout, @NotNull TimeUnit timeUnit);
 
-    /**
-     * Disables the option that the remote host can send a result to the connection input
-     *
-     * @return The current instance of this class
-     */
-    @NotNull
-    RequestBuilder disableInput();
+  /**
+   * Adds a cookie to the request header
+   *
+   * @param name  The name of the cookie
+   * @param value The value which the cookie should has
+   * @return The current instance of this class
+   * @since RB 1.0.2
+   */
+  @NotNull
+  RequestBuilder addCookie(@NotNull String name, @NotNull String value);
 
-    /**
-     * Enables the possibility for the user to interact with the connection
-     *
-     * @return The current instance of this class
-     */
-    @NotNull
-    RequestBuilder enableUserInteraction();
+  /**
+   * Adds a bunch of cookies to the request. Note that only the key and value are used when firing the request.
+   *
+   * @param cookies The cookies which should get added to the request
+   * @return The current instance of this class
+   * @since RB 1.0.2
+   */
+  @NotNull
+  RequestBuilder addCookies(@NotNull HttpCookie... cookies);
 
-    /**
-     * Sets the timeout time for the connection
-     *
-     * @param timeout  The time which should be wait until the connection timout
-     * @param timeUnit The time unit of the connect timout
-     * @return The current instance of this class
-     * @throws IllegalArgumentException If either the TimeUnit is null or timeout is {@code < 0}
-     * @deprecated Use {@link #connectTimeout(int, TimeUnit)} instead
-     */
-    @NotNull
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    default RequestBuilder setConnectTimeout(@Range(from = 0, to = Integer.MAX_VALUE) int timeout, @NotNull TimeUnit timeUnit) {
-        return this.connectTimeout(timeout, timeUnit);
-    }
+  /**
+   * Adds a bunch of cookies to the request. Note that only the key and value are used when firing the request.
+   *
+   * @param cookies The cookies which should get added to the request
+   * @return The current instance of this class
+   * @since RB 1.0.2
+   */
+  @NotNull
+  RequestBuilder addCookies(@NotNull Collection<HttpCookie> cookies);
 
-    /**
-     * Sets the timeout time for the connection
-     *
-     * @param timeout  The time which should be wait until the connection timout
-     * @param timeUnit The time unit of the connect timout
-     * @return The current instance of this class
-     * @throws IllegalArgumentException If either the TimeUnit is null or timeout is {@code < 0}
-     */
-    @NotNull
-    RequestBuilder connectTimeout(@Range(from = 0, to = Integer.MAX_VALUE) int timeout, @NotNull TimeUnit timeUnit);
+  /**
+   * Fires the request and waits for the result
+   *
+   * @return The result of the request which got fired
+   * @throws IOException If an connection error, read error etc. occurs
+   */
+  @NotNull
+  RequestResult fire() throws IOException;
 
-    /**
-     * Sets the read timeout of the connection (only needed if input is enabled)
-     *
-     * @param timeout  The time which should be wait until the read timout
-     * @param timeUnit The time unit of the read timout
-     * @return The current instance of this class
-     * @throws IllegalArgumentException If either the TimeUnit is null or timeout is {@code < 0}
-     * @deprecated Use {@link #readTimeout(int, TimeUnit)} instead
-     */
-    @NotNull
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval
-    default RequestBuilder setReadTimeOut(int timeout, @NotNull TimeUnit timeUnit) {
-        return this.readTimeout(timeout, timeUnit);
-    }
+  /**
+   * Fires the request without reading the result.
+   *
+   * @throws IOException If an connection error, read error etc. occurs
+   */
+  void fireAndForget() throws IOException;
 
-    /**
-     * Sets the read timeout of the connection (only needed if input is enabled)
-     *
-     * @param timeout  The time which should be wait until the read timout
-     * @param timeUnit The time unit of the read timout
-     * @return The current instance of this class
-     * @throws IllegalArgumentException If either the TimeUnit is null or timeout is {@code < 0}
-     */
-    @NotNull
-    RequestBuilder readTimeout(int timeout, @NotNull TimeUnit timeUnit);
-
-    /**
-     * Adds a cookie to the request header
-     *
-     * @param name  The name of the cookie
-     * @param value The value which the cookie should has
-     * @return The current instance of this class
-     * @since RB 1.0.2
-     */
-    @NotNull
-    RequestBuilder addCookie(@NotNull String name, @NotNull String value);
-
-    /**
-     * Adds a bunch of cookies to the request. Note that only the key and value are used when firing the
-     * request.
-     *
-     * @param cookies The cookies which should get added to the request
-     * @return The current instance of this class
-     * @since RB 1.0.2
-     */
-    @NotNull
-    RequestBuilder addCookies(@NotNull HttpCookie... cookies);
-
-    /**
-     * Adds a bunch of cookies to the request. Note that only the key and value are used when firing the
-     * request.
-     *
-     * @param cookies The cookies which should get added to the request
-     * @return The current instance of this class
-     * @since RB 1.0.2
-     */
-    @NotNull
-    RequestBuilder addCookies(@NotNull Collection<HttpCookie> cookies);
-
-    /**
-     * Fires the request and waits for the result
-     *
-     * @return The result of the the request which got fired
-     * @throws IOException If an connection error, read error etc. occurs
-     */
-    @NotNull
-    RequestResult fireAndForget() throws IOException;
-
-    /**
-     * Fires the request async and returns the future of it
-     *
-     * @return The future of the result, filled after the request was successful
-     */
-    @NotNull
-    CompletableFuture<RequestResult> fireAndForgetAsynchronously();
+  /**
+   * Fires the request async and returns the future of it
+   *
+   * @return The future of the result, filled after the request was successful
+   */
+  @NotNull
+  CompletableFuture<RequestResult> fireAndForgetAsynchronously();
 }

@@ -27,9 +27,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Static methods that helps to check if a constructor or method is used correctly.
- * If the condition cannot be met it will throw an unchecked exception to signal the user that the
- * method is used incorrectly. It's helping developers, too:
+ * Static methods that helps to check if a constructor or method is used correctly. If the condition cannot be met it
+ * will throw an unchecked exception to signal the user that the method is used incorrectly. It's helping developers,
+ * too:
  * <p>
  * Instead of:
  * <pre>{@code
@@ -67,38 +67,38 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class Validate {
 
-    /* Ensures that the class cannot get initialized */
-    private Validate() {
-        throw new UnsupportedOperationException();
-    }
+  /* Ensures that the class cannot get initialized */
+  private Validate() {
+    throw new UnsupportedOperationException();
+  }
 
-    /**
-     * Ensures that the given object is {@code non-null}.
-     *
-     * @param check        The object which should get checked if it's null.
-     * @param message      The message which should get printed in the console or simply {@code null}
-     *                     then the message is {@code 'null'}.
-     * @param replacements The replacements for the formatted string.
-     * @throws IllegalArgumentException If the given object is {@code null}.
-     */
-    public static void notNull(@Nullable Object check, @Nullable Object message, @NotNull Object... replacements) {
-        if (check == null) {
-            throw new IllegalArgumentException(String.format(String.valueOf(message), replacements));
-        }
+  /**
+   * Ensures that the given object is {@code non-null}.
+   *
+   * @param check        The object which should get checked if it's null.
+   * @param message      The message which should get printed in the console or simply {@code null} then the message is
+   *                     {@code 'null'}.
+   * @param replacements The replacements for the formatted string.
+   * @throws IllegalArgumentException If the given object is {@code null}.
+   */
+  public static void notNull(@Nullable Object check, @Nullable Object message, @NotNull Object... replacements) {
+    if (check == null) {
+      throw new IllegalArgumentException(String.format(String.valueOf(message), replacements));
     }
+  }
 
-    /**
-     * Checks if the given argument is true
-     *
-     * @param check        The argument which should get checked
-     * @param message      The message which should get printed in the console or simply {@code null}
-     *                     then the message is {@code 'null'}.
-     * @param replacements The replacements for the formatted string.
-     * @throws IllegalArgumentException if the given argument is {@code false}
-     */
-    public static void checkArgument(boolean check, @Nullable Object message, @NotNull Object... replacements) {
-        if (!check) {
-            throw new IllegalArgumentException(String.format(String.valueOf(message), replacements));
-        }
+  /**
+   * Checks if the given argument is true
+   *
+   * @param check        The argument which should get checked
+   * @param message      The message which should get printed in the console or simply {@code null} then the message is
+   *                     {@code 'null'}.
+   * @param replacements The replacements for the formatted string.
+   * @throws IllegalArgumentException if the given argument is {@code false}
+   */
+  public static void checkArgument(boolean check, @Nullable Object message, @NotNull Object... replacements) {
+    if (!check) {
+      throw new IllegalArgumentException(String.format(String.valueOf(message), replacements));
     }
+  }
 }

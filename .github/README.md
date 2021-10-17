@@ -1,20 +1,26 @@
 # RequestBuilder [![Discord](https://img.shields.io/discord/499666347337449472.svg?color=7289DA&label=discord)](https://discord.gg/uskXdVZ) [![](https://jitpack.io/v/derklaro/requestbuilder.svg)](https://jitpack.io/#derklaro/requestbuilder)
-This repository provides a simple request builder for url connections completely based on the java provided
-classes without any external dependencies (main goal).
+
+This repository provides a simple request builder for url connections completely based on the java provided classes
+without any external dependencies (main goal).
 
 ## Support our work
-If you like the request builder and want to support our work you can **star** :star2: and join our [Discord](https://discord.gg/uskXdVZ).
+
+If you like the request builder and want to support our work you can **star** :star2: and join
+our [Discord](https://discord.gg/uskXdVZ).
 
 ## Found a bug or have a proposal?
+
 Please
 [**open an issue**](https://github.com/derklaro/reformcloud2-prefix-system/issues/new)
 and ***describe the bug/proposal as detailed as possible*** and **look into your email if we have replied to your issue
 and answer upcoming questions**.
 
 ## Dependencies
+
 To include the project in yours you may use the following dependencies:
 
 Maven repository:
+
 ```xml
 <repository>
     <id>jitpack.io</id>
@@ -23,6 +29,7 @@ Maven repository:
 ```
 
 Maven dependency:
+
 ```xml
 <dependency>
     <groupId>com.github.derklaro</groupId>
@@ -32,6 +39,7 @@ Maven dependency:
 ```
 
 Gradle repository:
+
 ```groovy
 maven {
     name 'jitpack.io'
@@ -40,67 +48,72 @@ maven {
 ```
 
 Gradle dependency:
+
 ```groovy
 compile group: 'com.github.derklaro', name: 'requestbuilder', version: '1.0.5'
 ```
 
 ## The builder class
+
 ```java
 public class Main {
-    public static void main(String[] args) {
-        // Creates a simple builder with 'https://google.de' as target and no proxy
-        RequestBuilder requestBuilder = RequestBuilder.newBuilder("https:google.de", Proxy.NO_PROXY);
 
-        // We are now only accepting 'application/json' as result mime type
-        requestBuilder.accepts(MimeTypes.getMimeType("json"));
+  public static void main(String[] args) {
+    // Creates a simple builder with 'https://google.de' as target and no proxy
+    RequestBuilder requestBuilder = RequestBuilder.newBuilder("https:google.de", Proxy.NO_PROXY);
 
-        // We are sending the mime type 'application/json'
-        requestBuilder.setMimeType(MimeTypes.getMimeType("json"));
+    // We are now only accepting 'application/json' as result mime type
+    requestBuilder.accepts(MimeTypes.getMimeType("json"));
 
-        // We are following the redirects the server will make
-        requestBuilder.enableRedirectFollow();
+    // We are sending the mime type 'application/json'
+    requestBuilder.setMimeType(MimeTypes.getMimeType("json"));
 
-        // We are now able to use the output stream of the connection
-        requestBuilder.enableOutput();
+    // We are following the redirects the server will make
+    requestBuilder.enableRedirectFollow();
 
-        // We are allowing the user to interact with the connection
-        requestBuilder.enableUserInteraction();
-    
-        // We will now bypass the caches of the jvm
-        requestBuilder.disableCaches();
+    // We are now able to use the output stream of the connection
+    requestBuilder.enableOutput();
 
-        // We will now not accepting any incoming data
-        requestBuilder.disableInput();
+    // We are allowing the user to interact with the connection
+    requestBuilder.enableUserInteraction();
 
-        // After 5 seconds the connect should time out
-        requestBuilder.setConnectTimeout(5, TimeUnit.SECONDS);
+    // We will now bypass the caches of the jvm
+    requestBuilder.disableCaches();
 
-        // We will make a get request. Possibilities are get, post, head, options, put, delete, trace
-        requestBuilder.setRequestMethod(RequestMethod.GET);
+    // We will now not accepting any incoming data
+    requestBuilder.disableInput();
 
-        // We are setting the maximum amount of time the client will read from the connection
-        requestBuilder.setReadTimeOut(5, TimeUnit.SECONDS);
-    
-        // Sets the specified cookie during the request
-        requestBuilder.addCookies(new HttpCookie("AName", "AValue"));
+    // After 5 seconds the connect should time out
+    requestBuilder.setConnectTimeout(5, TimeUnit.SECONDS);
 
-        // Adds a header to the connection
-        requestBuilder.addHeader("AKey", "AValue");
+    // We will make a get request. Possibilities are get, post, head, options, put, delete, trace
+    requestBuilder.setRequestMethod(RequestMethod.GET);
 
-        // Adds a body to the request
-        requestBuilder.addBody("AKey", "AValue");
+    // We are setting the maximum amount of time the client will read from the connection
+    requestBuilder.setReadTimeOut(5, TimeUnit.SECONDS);
 
-        try (RequestResult requestResult = requestBuilder.fireAndForget()) {
-            // now we can handle the result of the connection
-        }
+    // Sets the specified cookie during the request
+    requestBuilder.addCookies(new HttpCookie("AName", "AValue"));
 
-        requestBuilder.fireAndForgetAsynchronously().thenAccept(result -> {
-            // handle the result of the request
-        });
+    // Adds a header to the connection
+    requestBuilder.addHeader("AKey", "AValue");
+
+    // Adds a body to the request
+    requestBuilder.addBody("AKey", "AValue");
+
+    try (RequestResult requestResult = requestBuilder.fireAndForget()) {
+      // now we can handle the result of the connection
     }
+
+    requestBuilder.fireAndForgetAsynchronously().thenAccept(result -> {
+      // handle the result of the request
+    });
+  }
 }
 ```
+
 ## The request result
+
 ```java
 public class Main {
     public static void main(String[] args) {
@@ -153,6 +166,7 @@ public class Main {
 ```
 
 ## Build this project
+
 ```
 git clone https://github.com/derklaro/requestbuilder.git
 cd requestbuilder/

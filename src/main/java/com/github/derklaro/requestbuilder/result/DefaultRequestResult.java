@@ -26,9 +26,6 @@ package com.github.derklaro.requestbuilder.result;
 import com.github.derklaro.requestbuilder.RequestBuilder;
 import com.github.derklaro.requestbuilder.common.Validate;
 import com.github.derklaro.requestbuilder.result.stream.StreamType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -38,6 +35,8 @@ import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This is the default implementation of a {@link RequestResult}.
@@ -48,146 +47,146 @@ import java.util.Collections;
  */
 public class DefaultRequestResult implements RequestResult {
 
-    private final HttpURLConnection httpURLConnection;
+  private final HttpURLConnection httpURLConnection;
 
-    protected DefaultRequestResult(@NotNull HttpURLConnection httpURLConnection, @Nullable Collection<byte[]> body) {
-        Validate.notNull(httpURLConnection, "The connection may not be null");
+  protected DefaultRequestResult(@NotNull HttpURLConnection httpURLConnection, @Nullable Collection<byte[]> body) {
+    Validate.notNull(httpURLConnection, "The connection may not be null");
 
-        this.httpURLConnection = httpURLConnection;
-        if (body != null) {
-            body.forEach(bytes -> {
-                try {
-                    httpURLConnection.getOutputStream().write(bytes);
-                    httpURLConnection.getOutputStream().flush();
-                } catch (final IOException ex) {
-                    ex.printStackTrace();
-                }
-            });
-        }
-    }
-
-    @NotNull
-    @Override
-    public InputStream getStream(@NotNull StreamType streamType) {
-        Validate.notNull(streamType, "Cannot use null stream type");
-
+    this.httpURLConnection = httpURLConnection;
+    if (body != null) {
+      body.forEach(bytes -> {
         try {
-            if (streamType.equals(StreamType.DEFAULT)) {
-                return this.httpURLConnection.getInputStream();
-            }
-
-            if (streamType.equals(StreamType.CHOOSE)) {
-                if (this.getStatusCode() == 200) {
-                    return this.httpURLConnection.getInputStream();
-                }
-
-                return this.httpURLConnection.getErrorStream();
-            }
-
-            return this.httpURLConnection.getErrorStream();
+          httpURLConnection.getOutputStream().write(bytes);
+          httpURLConnection.getOutputStream().flush();
         } catch (final IOException ex) {
-            throw new RuntimeException(ex);
+          ex.printStackTrace();
         }
+      });
     }
+  }
 
-    @NotNull
-    @Override
-    public OutputStream getOutputStream() {
-        try {
-            return this.httpURLConnection.getOutputStream();
-        } catch (final IOException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
+  @NotNull
+  @Override
+  public InputStream getStream(@NotNull StreamType streamType) {
+    Validate.notNull(streamType, "Cannot use null stream type");
 
-    @Override
-    public boolean isConnected() {
-        try {
-            return this.httpURLConnection.getResponseCode() != -1;
-        } catch (IOException exception) {
-            return false;
-        }
-    }
+    try {
+      if (streamType.equals(StreamType.DEFAULT)) {
+        return this.httpURLConnection.getInputStream();
+      }
 
-    @Override
-    public boolean hasFailed() {
-        return this.getStatusCode() != 200;
-    }
-
-    @NotNull
-    @Override
-    public String getSuccessResultAsString() {
-        try {
-            return this.readStream(this.httpURLConnection.getInputStream());
-        } catch (Throwable throwable) {
-            throw new RuntimeException(throwable);
-        }
-    }
-
-    @NotNull
-    @Override
-    public String getErrorResultAsString() {
-        try {
-            return this.readStream(this.httpURLConnection.getErrorStream());
-        } catch (final Throwable ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
-    @NotNull
-    @Override
-    public String getResultAsString() {
-        if (this.getStatusCode() >= 200 && this.getStatusCode() <= 299) {
-            return this.getSuccessResultAsString();
+      if (streamType.equals(StreamType.CHOOSE)) {
+        if (this.getStatusCode() == 200) {
+          return this.httpURLConnection.getInputStream();
         }
 
-        return this.getErrorResultAsString();
+        return this.httpURLConnection.getErrorStream();
+      }
+
+      return this.httpURLConnection.getErrorStream();
+    } catch (final IOException ex) {
+      throw new RuntimeException(ex);
+    }
+  }
+
+  @NotNull
+  @Override
+  public OutputStream getOutputStream() {
+    try {
+      return this.httpURLConnection.getOutputStream();
+    } catch (final IOException ex) {
+      throw new RuntimeException(ex);
+    }
+  }
+
+  @Override
+  public boolean isConnected() {
+    try {
+      return this.httpURLConnection.getResponseCode() != -1;
+    } catch (IOException exception) {
+      return false;
+    }
+  }
+
+  @Override
+  public boolean hasFailed() {
+    return this.getStatusCode() != 200;
+  }
+
+  @NotNull
+  @Override
+  public String getSuccessResultAsString() {
+    try {
+      return this.readStream(this.httpURLConnection.getInputStream());
+    } catch (Throwable throwable) {
+      throw new RuntimeException(throwable);
+    }
+  }
+
+  @NotNull
+  @Override
+  public String getErrorResultAsString() {
+    try {
+      return this.readStream(this.httpURLConnection.getErrorStream());
+    } catch (final Throwable ex) {
+      throw new RuntimeException(ex);
+    }
+  }
+
+  @NotNull
+  @Override
+  public String getResultAsString() {
+    if (this.getStatusCode() >= 200 && this.getStatusCode() <= 299) {
+      return this.getSuccessResultAsString();
     }
 
-    @NotNull
-    @Override
-    public Collection<HttpCookie> getCookies() {
-        return this.getCookies("Set-Cookie");
+    return this.getErrorResultAsString();
+  }
+
+  @NotNull
+  @Override
+  public Collection<HttpCookie> getCookies() {
+    return this.getCookies("Set-Cookie");
+  }
+
+  @NotNull
+  @Override
+  public Collection<HttpCookie> getCookies(@NotNull String cookiesHeader) {
+    String headerField = this.httpURLConnection.getHeaderField(cookiesHeader);
+    if (headerField == null) {
+      return Collections.emptyList();
     }
 
-    @NotNull
-    @Override
-    public Collection<HttpCookie> getCookies(@NotNull String cookiesHeader) {
-        String headerField = this.httpURLConnection.getHeaderField(cookiesHeader);
-        if (headerField == null) {
-            return Collections.emptyList();
-        }
+    return HttpCookie.parse(headerField);
+  }
 
-        return HttpCookie.parse(headerField);
+  @Override
+  public int getStatusCode() {
+    try {
+      return this.httpURLConnection.getResponseCode();
+    } catch (final Throwable throwable) {
+      return -1;
+    }
+  }
+
+  @NotNull
+  private String readStream(@NotNull InputStream stream) {
+    StringBuilder stringBuilder = new StringBuilder();
+    try (InputStreamReader inputStreamReader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+      final char[] chars = new char[4 * 1024];
+      int len;
+      while ((len = inputStreamReader.read(chars)) >= 0) {
+        stringBuilder.append(chars, 0, len);
+      }
+    } catch (final IOException ex) {
+      ex.printStackTrace();
     }
 
-    @Override
-    public int getStatusCode() {
-        try {
-            return this.httpURLConnection.getResponseCode();
-        } catch (final Throwable throwable) {
-            return -1;
-        }
-    }
+    return stringBuilder.toString();
+  }
 
-    @NotNull
-    private String readStream(@NotNull InputStream stream) {
-        StringBuilder stringBuilder = new StringBuilder();
-        try (InputStreamReader inputStreamReader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
-            final char[] chars = new char[4 * 1024];
-            int len;
-            while ((len = inputStreamReader.read(chars)) >= 0) {
-                stringBuilder.append(chars, 0, len);
-            }
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
-
-        return stringBuilder.toString();
-    }
-
-    @Override
-    public void close() {
-        this.httpURLConnection.disconnect();
-    }
+  @Override
+  public void close() {
+    this.httpURLConnection.disconnect();
+  }
 }
