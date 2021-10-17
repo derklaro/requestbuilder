@@ -134,7 +134,6 @@ public interface RequestBuilder extends AutoCloseable {
    * @param body The complete body as one string
    * @return The current instance of the class, for chaining
    * @throws IllegalArgumentException If the body string is null
-   * @deprecated Use {@link #addBody(byte[])} instead
    */
   @NotNull
   RequestBuilder addBody(@NotNull String body);
